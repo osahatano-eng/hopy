@@ -13,10 +13,11 @@ export const WORKS_META: Record<
   "y8durmct": {
     title: "y8durmct",
     price: 350,
-    stripePriceId: "price_....",
+    stripePriceId: "price_1SoqF5PdHZWs1X17cvujvG3",
   },
 
   
 };
+
 
 
