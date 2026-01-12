@@ -4,8 +4,12 @@ import { WORKS } from "@/lib/works";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
+function baseUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+  );
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -14,6 +18,14 @@ export async function GET(req: Request) {
   if (!sessionId) {
     return NextResponse.json({ ok: false, error: "missing_session_id" }, { status: 400 });
   }
+
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    return NextResponse.json({ ok: false, error: "missing_STRIPE_SECRET_KEY" }, { status: 500 });
+  }
+
+  // ✅ ビルド時に落ちない
+  const stripe = new Stripe(key);
 
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -37,12 +49,13 @@ export async function GET(req: Request) {
       count: bought.length,
       items: bought.map((w) => ({
         slug: w.slug,
-        image: w.image, // public/works の軽量PNG（540×960）
-        title: w.title ?? w.slug,
+        image: w.image,
+        title: (w as any).title ?? w.slug,
+        // SuccessClientは /download/[slug]?session_id=... に誘導するので、ここでは不要でもOK
+        download: `${baseUrl()}/api/download?session_id=${encodeURIComponent(sessionId)}&slug=${encodeURIComponent(w.slug)}`,
       })),
     });
   } catch {
     return NextResponse.json({ ok: false, error: "invalid_session" }, { status: 400 });
   }
 }
-
