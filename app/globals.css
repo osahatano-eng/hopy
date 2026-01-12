@@ -1,0 +1,306 @@
+/* app/globals.css */
+:root {
+  --bg: #0b0c0f;
+  --fg: #f2f2f2;
+  --muted: rgba(242, 242, 242, 0.72);
+  --hairline: rgba(242, 242, 242, 0.14);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: radial-gradient(1200px 600px at 20% 10%, rgba(255,255,255,0.06), transparent 60%),
+              radial-gradient(1000px 500px at 80% 30%, rgba(255,255,255,0.04), transparent 55%),
+              var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN",
+               "Yu Gothic", "Meiryo", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  letter-spacing: 0.01em;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+.container {
+  width: min(1100px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.hr {
+  height: 1px;
+  background: var(--hairline);
+  border: 0;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.h1 {
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1.05;
+  margin: 14px 0 18px;
+  font-weight: 600;
+}
+
+.sub {
+  font-size: clamp(14px, 1.4vw, 16px);
+  line-height: 1.9;
+  color: var(--muted);
+  max-width: 56ch;
+}
+
+.section {
+  padding: 96px 0;
+}
+
+.btnRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  transition: transform .12s ease, border-color .12s ease, background .12s ease;
+}
+
+.btn:hover { transform: translateY(-1px); border-color: rgba(242,242,242,0.26); }
+.btnPrimary { background: rgba(242,242,242,0.06); }
+.btnGhost { color: var(--muted); }
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  background: rgba(11,12,15,0.55);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.navInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.navLinks {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.navLink {
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 1px solid transparent;
+  padding: 6px 0;
+}
+.navLink:hover { color: var(--fg); border-bottom-color: var(--hairline); }
+
+.hero {
+  padding: 92px 0 70px;
+}
+
+.scrollHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 44px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.scrollLine {
+  width: 56px;
+  height: 1px;
+  background: var(--hairline);
+}
+
+.proof {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 22px;
+  margin-top: 40px;
+}
+.proofItem {
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 13px;
+}
+
+.featuredGrid {
+  margin-top: 34px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.workTile {
+  position: relative;
+  border-top: 1px solid var(--hairline);
+  padding-top: 14px;
+}
+
+.workPreview {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  background: rgba(242,242,242,0.05);
+  border: 1px solid rgba(242,242,242,0.08);
+}
+
+.workMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 10px;
+  gap: 14px;
+}
+
+.workTitle {
+  font-size: 14px;
+  color: var(--fg);
+  font-weight: 500;
+}
+.workSeries {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Hover: 暗転 + VIEW だけ */
+.workOverlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .14s ease;
+}
+.workOverlay span {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(242,242,242,0.92);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 6px;
+}
+.workTile:hover .workOverlay { opacity: 1; }
+.workTile:hover .workPreview { filter: brightness(0.85); }
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  margin-top: 28px;
+}
+.smallP {
+  color: var(--muted);
+  line-height: 1.9;
+  font-size: 13px;
+}
+
+.footer {
+  padding: 70px 0 60px;
+  border-top: 1px solid var(--hairline);
+}
+
+.footerTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.footerLine {
+  margin: 24px 0;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.footerLinks a { color: var(--muted); font-size: 12px; }
+.footerLinks a:hover { color: var(--fg); }
+
+@media (max-width: 820px) {
+  .proof { grid-template-columns: 1fr; }
+  .featuredGrid { grid-template-columns: 1fr; }
+  .twoCol { grid-template-columns: 1fr; }
+  .navLinks { gap: 14px; }
+}
+@media (max-width: 540px) {
+  .navLinks .navLink { display: none; }
+  .navLinks .btn { padding: 10px 12px; }
+}
+/* Featuredだけ画面端まで突き抜ける */
+.fullBleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* Shortsっぽい詰め */
+.shortsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;              /* ← ここが隙間 */
+  margin-top: 12px;
+}
+
+.shortsTile {
+  position: relative;
+  display: block;
+  border-radius: 0;      /* ← 角丸なし */
+  overflow: hidden;
+  border: none;          /* ← 枠いらないなら */
+}
+/* container の制限を突き抜ける */
+.fullBleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  overflow-x: clip; /* ← はみ出しを切る（hiddenでもOK） */
+}
+.shortsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* スマホ */
+  gap: 3px;               /* YouTubeっぽい詰め */
+  margin-top: 12px;
+}
+html, body {
+  overflow-x: hidden;
+}
+/* タブレット〜PC：4列固定 */
+@media (min-width: 700px) {
+  .shortsGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
