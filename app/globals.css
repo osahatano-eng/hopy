@@ -304,3 +304,11 @@ html, body {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+/* 画像の長押し保存メニューなどを抑止（完全防止ではない） */
+.noSaveMedia {
+  -webkit-touch-callout: none; /* iOS 長押しメニュー抑止 */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;     /* iOS/Chromeの画像ドラッグ抑止 */
+  pointer-events: auto;
+}
