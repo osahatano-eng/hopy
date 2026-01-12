@@ -1,70 +1,28 @@
 import SiteFrame from "@/app/_components/SiteFrame";
-import { getWorkBySlug } from "@/lib/works";
+import DownloadClient from "./DownloadClient";
 
 type Props = {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: { slug: string } | Promise<{ slug: string }>;
 };
 
-export default function DownloadPage({ params, searchParams = {} }: Props) {
-  const slug = params.slug;
-
-  const sessionIdRaw = searchParams.session_id;
-  const session_id = Array.isArray(sessionIdRaw) ? sessionIdRaw[0] : sessionIdRaw;
-
-  if (!session_id) {
-    return (
-      <SiteFrame>
-        <main className="container" style={{ padding: "24px 0" }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700 }}>Forbidden</h1>
-          <p style={{ marginTop: 10 }}>session_id がありません。</p>
-        </main>
-      </SiteFrame>
-    );
-  }
-
-  const work = getWorkBySlug(slug);
-  if (!work) {
-    return (
-      <SiteFrame>
-        <main className="container" style={{ padding: "24px 0" }}>
-          <h1 style={{ fontSize: 22, fontWeight: 700 }}>Not Found</h1>
-          <p style={{ marginTop: 10 }}>作品が見つかりません。</p>
-        </main>
-      </SiteFrame>
-    );
-  }
-
-  const href = `/api/download?slug=${encodeURIComponent(slug)}&session_id=${encodeURIComponent(
-    session_id
-  )}`;
+export default async function DownloadPage({ params }: Props) {
+  const p = await params;
+  const slug = p.slug;
 
   return (
     <SiteFrame>
-      <main className="container" style={{ padding: "24px 0" }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700 }}>Download</h1>
-        <p style={{ marginTop: 10 }}>{work.title ?? work.slug}</p>
+      <main>
+        <section className="section" style={{ paddingTop: 44 }}>
+          <div className="container">
+            <div className="kicker">Download</div>
+            <h1 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>
+              ダウンロード準備中…
+            </h1>
 
-        <div style={{ marginTop: 16 }}>
-          <a
-            href={href}
-            style={{
-              display: "inline-block",
-              padding: "12px 16px",
-              borderRadius: 10,
-              background: "black",
-              color: "white",
-              textDecoration: "none",
-              fontWeight: 700,
-            }}
-          >
-            原本（高解像度PNG）をダウンロード
-          </a>
-        </div>
-
-        <p style={{ marginTop: 16, opacity: 0.7 }}>
-          ※ 購入確認（paid + 購入品一致）を通った場合のみダウンロードできます。
-        </p>
+            {/* ★ server側で session_id を検査しない。クライアントがURLから拾う */}
+            <DownloadClient slug={slug} />
+          </div>
+        </section>
       </main>
     </SiteFrame>
   );
