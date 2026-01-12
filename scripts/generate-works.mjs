@@ -1,63 +1,60 @@
-import fs from "node:fs";
-import path from "node:path";
+// scripts/generate-works.mjs
+import fs from "fs";
+import path from "path";
 
 const ROOT = process.cwd();
-const WORKS_DIR = path.join(ROOT, "public", "works");
+const PUBLIC_WORKS_DIR = path.join(ROOT, "public", "works");
 const OUT_FILE = path.join(ROOT, "lib", "works.generated.ts");
 
-const IMG_EXTS = new Set([".png", ".jpg", ".jpeg", ".webp", ".avif"]);
+function isPng(file) {
+  return file.toLowerCase().endsWith(".png");
+}
 
-function assertSafeSlug(slug) {
-  if (!/^[a-z0-9][a-z0-9-_]*$/.test(slug)) {
-    throw new Error(
-      "[generate-works] Unsafe slug: \"" +
-        slug +
-        "\"\nファイル名は英小文字/数字/ - _ のみ推奨。\n例: nocturne-quiet-road.png"
-    );
-  }
+function slugFromFilename(file) {
+  return file.replace(/\.png$/i, "");
+}
+
+function ensureDirExists(dirPath) {
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
 }
 
 function main() {
-  if (!fs.existsSync(WORKS_DIR)) {
-    throw new Error("[generate-works] Not found: " + WORKS_DIR);
+  if (!fs.existsSync(PUBLIC_WORKS_DIR)) {
+    throw new Error(`public/works not found: ${PUBLIC_WORKS_DIR}`);
   }
 
   const files = fs
-    .readdirSync(WORKS_DIR, { withFileTypes: true })
-    .filter((d) => d.isFile())
-    .map((d) => d.name)
-    .filter((name) => IMG_EXTS.has(path.extname(name).toLowerCase()))
-    .sort((a, b) => a.localeCompare(b, "en"));
+    .readdirSync(PUBLIC_WORKS_DIR)
+    .filter(isPng)
+    .sort((a, b) => a.localeCompare(b));
 
-  const items = files.map((name) => {
-    const ext = path.extname(name);
-    const base = path.basename(name, ext);
-    const slug = base.trim().toLowerCase();
-    assertSafeSlug(slug);
-    return { slug: slug, image: "/works/" + name };
+  const works = files.map((file) => {
+    const slug = slugFromFilename(file);
+    return {
+      slug,
+      image: `/works/${file}`,      // public表示用
+      downloadFile: file,           // private側の同名ファイル
+    };
   });
 
-  const content =
-    "/* AUTO-GENERATED FILE. DO NOT EDIT.\n" +
-    " * Generated from /public/works by scripts/generate-works.mjs\n" +
-    " */\n" +
-    "export type WorkBase = {\n" +
-    "  slug: string;\n" +
-    "  image: string;\n" +
-    "};\n\n" +
-    "export const WORKS: WorkBase[] = " +
-    JSON.stringify(items, null, 2) +
-    " as const;\n";
+  const header = `/* AUTO-GENERATED FILE. DO NOT EDIT.
+ * Generated from /public/works by scripts/generate-works.mjs
+ */`;
 
-  fs.mkdirSync(path.dirname(OUT_FILE), { recursive: true });
-  fs.writeFileSync(OUT_FILE, content, "utf8");
+  const body = `${header}
+export type WorkBase = {
+  slug: string;
+  image: string;
+  downloadFile: string;
+};
 
-  console.log(
-    "[generate-works] " +
-      items.length +
-      " works -> " +
-      path.relative(ROOT, OUT_FILE)
-  );
+export const WORKS: WorkBase[] = ${JSON.stringify(works, null, 2)} as const;
+`;
+
+  ensureDirExists(path.dirname(OUT_FILE));
+  fs.writeFileSync(OUT_FILE, body, "utf8");
+
+  console.log(`Generated: ${path.relative(ROOT, OUT_FILE)} (${works.length} works)`);
 }
 
 main();
