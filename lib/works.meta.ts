@@ -12,10 +12,11 @@ export const WORKS_META: Record<
 > = {
   "y8durmct": {
     title: "y8durmct",
-    price: 220,
+    price: 350,
     stripePriceId: "price_....",
   },
 
   
 };
+
 
