@@ -1,12 +1,19 @@
 import SiteFrame from "@/app/_components/SiteFrame";
 import SuccessClient from "./SuccessClient";
 
+type SP = { [key: string]: string | string[] | undefined };
+
 type Props = {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<SP> | SP;
 };
 
-export default function SuccessPage({ searchParams }: Props) {
-  const raw = searchParams?.session_id;
+export default async function SuccessPage({ searchParams }: Props) {
+  const sp: SP =
+    typeof (searchParams as any)?.then === "function"
+      ? await (searchParams as Promise<SP>)
+      : (searchParams as SP) ?? {};
+
+  const raw = sp.session_id;
   const sessionId = Array.isArray(raw) ? raw[0] : raw;
 
   return (
@@ -28,9 +35,9 @@ export default function SuccessPage({ searchParams }: Props) {
 
             {!sessionId && (
               <div style={{ marginTop: 14, fontSize: 12, opacity: 0.7, lineHeight: 1.7 }}>
-                session_id が見つかりませんでした。Stripeの成功URLに
+                session_id が見つかりませんでした。
                 <br />
-                <code>?session_id=...</code> が付いているか確認してください。
+                ただしこれは Next.js 側で searchParams を正しく読めていない可能性が高いです。
               </div>
             )}
           </div>
