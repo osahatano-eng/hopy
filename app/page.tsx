@@ -128,7 +128,7 @@ export default function HomePage() {
               <div className="sampleCol">
                 <div className="sampleFrame">
                   <img
-                    src="/samples/quiet-fire.png"
+                    src="/works/quiet-fire.png"
                     alt="quiet-fire sample still"
                     style={{
                       width: "100%",
