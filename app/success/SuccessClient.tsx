@@ -1,18 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { setFavoriteSlugs } from "@/app/_lib/favorites";
 
 type Item = {
   slug: string;
   image: string;
   title: string;
-  // ここはもう直接DL用URLは使わない
-  // download: string; ← 不要
 };
 
+function getSessionIdFromUrl() {
+  if (typeof window === "undefined") return "";
+  const sp = new URLSearchParams(window.location.search);
+  return String(sp.get("session_id") ?? "").trim();
+}
+
 export default function SuccessClient({ sessionId }: { sessionId?: string }) {
+  const sid = useMemo(() => (sessionId?.trim() ? sessionId.trim() : getSessionIdFromUrl()), [sessionId]);
+
   const [items, setItems] = useState<Item[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
 
@@ -21,11 +27,14 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
     setFavoriteSlugs([]);
 
     const run = async () => {
-      if (!sessionId) return;
+      if (!sid) {
+        setStatus("err");
+        return;
+      }
 
       setStatus("loading");
       try {
-        const res = await fetch(`/api/purchases?session_id=${encodeURIComponent(sessionId)}`, {
+        const res = await fetch(`/api/purchases?session_id=${encodeURIComponent(sid)}`, {
           cache: "no-store",
         });
         const json = await res.json();
@@ -39,7 +48,7 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
     };
 
     run();
-  }, [sessionId]);
+  }, [sid]);
 
   return (
     <div style={{ marginTop: 18 }}>
@@ -54,26 +63,25 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
         <div className="kicker">Download</div>
 
         {status === "loading" && (
-          <div style={{ marginTop: 10, fontSize: 13, opacity: 0.75 }}>
-            読み込み中...
-          </div>
+          <div style={{ marginTop: 10, fontSize: 13, opacity: 0.75 }}>読み込み中...</div>
         )}
 
         {status === "err" && (
           <div style={{ marginTop: 10, fontSize: 13, opacity: 0.75, lineHeight: 1.8 }}>
             ダウンロード一覧を取得できませんでした。
             <br />
-            <span style={{ opacity: 0.7 }}>session_idが付いているか確認してください。</span>
+            <span style={{ opacity: 0.7 }}>session_id が取得できているか確認してください。</span>
+            <br />
+            <span style={{ opacity: 0.7 }}>
+              （いまの session_id: {sid ? sid : "なし"}）
+            </span>
           </div>
         )}
 
         {status === "ok" && (
           <>
-            <div style={{ marginTop: 10, fontSize: 13, opacity: 0.85 }}>
-              {items.length}件のダウンロード
-            </div>
+            <div style={{ marginTop: 10, fontSize: 13, opacity: 0.85 }}>{items.length}件のダウンロード</div>
 
-            {/* works と同じグリッド */}
             <div className="fullBleed" style={{ marginTop: 14 }}>
               <div className="shortsGrid">
                 {items.map((it) => (
@@ -104,11 +112,8 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
                         />
                       </div>
 
-                      {/* ★ここが変更点：/download/[slug] 経由 */}
                       <Link
-                        href={`/download/${it.slug}?session_id=${encodeURIComponent(
-                          sessionId ?? ""
-                        )}`}
+                        href={`/download/${it.slug}?session_id=${encodeURIComponent(sid)}`}
                         className="btn btnPrimary"
                         style={{
                           position: "absolute",
