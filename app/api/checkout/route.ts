@@ -1,30 +1,44 @@
+import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { WORKS } from "@/lib/works";
+import { getWorkBySlug } from "@/lib/works";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-export async function POST(req: Request) {
-  const form = await req.formData();
-  const slug = String(form.get("slug") ?? "");
-
-  const w = WORKS.find((x) => x.slug === slug);
-  if (!w) return new Response("Not found", { status: 404 });
-
-  const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin;
-
-if (!w.stripePriceId?.startsWith("price_")) {
-  return new Response("この作品は準備中です", { status: 400 });
+function baseUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+  );
 }
 
+export async function POST(req: Request) {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
+    return NextResponse.json({ ok: false, error: "missing_STRIPE_SECRET_KEY" }, { status: 500 });
+  }
+
+  const stripe = new Stripe(key);
+
+  const form = await req.formData();
+  const slug = String(form.get("slug") ?? "").trim();
+
+  if (!slug) {
+    return NextResponse.json({ ok: false, error: "missing_slug" }, { status: 400 });
+  }
+
+  const work = getWorkBySlug(slug);
+  if (!work || !work.stripePriceId) {
+    return NextResponse.json({ ok: false, error: "not_sellable" }, { status: 404 });
+  }
+
+  const url = baseUrl();
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    line_items: [{ price: w.stripePriceId, quantity: 1 }],
-    success_url: `${origin}/checkout/success?slug=${encodeURIComponent(slug)}&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/checkout/cancel?slug=${encodeURIComponent(slug)}`,
+    line_items: [{ price: work.stripePriceId, quantity: 1 }],
+    success_url: `${url}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${url}/p/${encodeURIComponent(slug)}`,
   });
 
-  return Response.redirect(session.url!, 303);
+  return NextResponse.redirect(session.url!, 303);
 }
