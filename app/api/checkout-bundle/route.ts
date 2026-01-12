@@ -1,12 +1,8 @@
-// app/api/checkout-bundle/route.ts
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { WORKS } from "@/lib/works";
 
 export const runtime = "nodejs";
-
-// apiVersionは指定しない（型ズレ/ビルド事故を避ける）
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 function baseUrl() {
   return (
@@ -16,9 +12,13 @@ function baseUrl() {
 }
 
 export async function POST(req: Request) {
-  if (!process.env.STRIPE_SECRET_KEY) {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) {
     return NextResponse.json({ ok: false, error: "missing_STRIPE_SECRET_KEY" }, { status: 500 });
   }
+
+  // ✅ ここで初めて生成（ビルド時に落ちない）
+  const stripe = new Stripe(key);
 
   let slugs: string[] = [];
   const ct = req.headers.get("content-type") || "";
