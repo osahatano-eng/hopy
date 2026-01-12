@@ -16,9 +16,6 @@ export const WORKS_META: Record<
     stripePriceId: "price_....",
   },
 
-  "26_a_02": {
-    title: "26_a_02",
-    price: 220,
-    stripePriceId: "price_....",
-  },
+  
 };
+
