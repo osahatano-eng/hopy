@@ -6,9 +6,8 @@ import { getWorkBySlug } from "@/lib/works";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
 
 function res(status: number, message: string) {
   return new NextResponse(message, { status });
@@ -55,3 +54,4 @@ export async function GET(req: NextRequest) {
     return res(500, "Server Error");
   }
 }
+
