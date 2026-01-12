@@ -1,63 +1,62 @@
+// app/api/checkout-bundle/route.ts
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { WORKS } from "@/lib/works";
 
 export const runtime = "nodejs";
 
+// apiVersionは指定しない（型ズレ/ビルド事故を避ける）
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-
-function getBaseUrl() {
-  const url =
+function baseUrl() {
+  return (
     process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
-  return url;
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+  );
 }
 
 export async function POST(req: Request) {
-  const form = await req.formData();
-  const slugsRaw = String(form.get("slugs") ?? "");
-
-  const slugs = slugsRaw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  if (slugs.length === 0) {
-    return NextResponse.redirect(new URL("/favorites", getBaseUrl()), { status: 303 });
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return NextResponse.json({ ok: false, error: "missing_STRIPE_SECRET_KEY" }, { status: 500 });
   }
 
-  // サーバー側で照合（改ざん防止）
-  const works = slugs
-    .map((slug) => WORKS.find((w) => w.slug === slug))
-    .filter(Boolean) as (typeof WORKS)[number][];
+  let slugs: string[] = [];
+  const ct = req.headers.get("content-type") || "";
 
+  try {
+    if (ct.includes("application/json")) {
+      const body = await req.json();
+      slugs = Array.isArray(body?.slugs) ? body.slugs.map(String) : [];
+    } else {
+      const form = await req.formData();
+      slugs = form.getAll("slugs").map((v) => String(v));
+      const one = form.get("slug");
+      if (slugs.length === 0 && one) slugs = [String(one)];
+    }
+  } catch {
+    slugs = [];
+  }
+
+  slugs = Array.from(new Set(slugs)).filter(Boolean);
+
+  const works = WORKS.filter((w) => slugs.includes(w.slug) && Boolean(w.stripePriceId));
   if (works.length === 0) {
-    return new NextResponse("No valid items.", { status: 400 });
+    return NextResponse.json({ ok: false, error: "no_sellable_items" }, { status: 400 });
   }
 
-  // 重複排除
-  const uniq = Array.from(new Map(works.map((w) => [w.slug, w])).values());
-
-  // stripePriceId が無いものが混ざったら弾く（あなたの運用だと基本ないはず）
-  if (uniq.some((w) => !w.stripePriceId)) {
-    return new NextResponse("Some items are not purchasable.", { status: 400 });
-  }
-
-  const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = uniq.map((w) => ({
+  const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = works.map((w) => ({
     price: w.stripePriceId!,
     quantity: 1,
   }));
 
-  const baseUrl = getBaseUrl();
+  const url = baseUrl();
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items,
-    success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${baseUrl}/favorites`,
+    success_url: `${url}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${url}/favorites`,
   });
 
-  return NextResponse.redirect(session.url!, { status: 303 });
+  return NextResponse.redirect(session.url!, 303);
 }
-
