@@ -3,10 +3,17 @@
  */
 export type WorkBase = {
   slug: string;
-  image: string;        // public/works の軽量PNG
-  downloadFile: string; // private/works の高解像度PNG（ファイル名）
+  image: string;
+  downloadFile: string;
 };
 
 export const WORKS: WorkBase[] = [
-  { slug: "y8durmct", image: "/works/y8durmct.png", downloadFile: "y8durmct.png" },
+  // 例：あなたの作品をここに並べる
+  // 既存分も「必ず downloadFile を入れる」
+  {
+    slug: "y8durmct",
+    image: "/works/y8durmct.png",
+    downloadFile: "y8durmct.png",
+  },
 ] as const;
+
