@@ -1,4 +1,4 @@
-export const WORKS_META: Record<
+﻿export const WORKS_META: Record<
   string,
   {
     title: string;
