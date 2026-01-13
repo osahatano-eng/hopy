@@ -35,9 +35,10 @@ export default function PrivacyPage() {
         </p>
 
         <div style={{ marginTop: 18, opacity: 0.6, fontSize: 12 }}>
-          最終更新日：2026-01-10（仮）
+          最終更新日：2026-01-13
         </div>
       </main>
     </SiteFrame>
   );
 }
+
