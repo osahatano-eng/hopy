@@ -9,9 +9,7 @@ export default function LicensePage() {
         <h1 style={{ marginTop: 10, fontSize: 24, fontWeight: 600 }}>ライセンス</h1>
 
         <p style={{ marginTop: 14, opacity: 0.85, lineHeight: 1.9 }}>
-          このページは準備中です。
-          <br />
-          当面は「再配布・転売は禁止 / 商用利用OK」を基本方針とします。
+          「再配布・転売は禁止 / 商用利用OK」を基本方針とします。
         </p>
 
         <div style={{ marginTop: 18, opacity: 0.85, lineHeight: 1.9 }}>
@@ -28,3 +26,4 @@ export default function LicensePage() {
     </SiteFrame>
   );
 }
+
