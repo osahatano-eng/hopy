@@ -19,7 +19,7 @@ export default function TermsPage() {
 
         <h2 style={{ marginTop: 22, fontSize: 16, fontWeight: 600 }}>第2条（購入・支払い）</h2>
         <p style={{ marginTop: 10, opacity: 0.85, lineHeight: 1.9 }}>
-          お支払いは決済サービス（Stripe）を通じて行います。購入手続き完了後、ダウンロードリンクが表示されます。
+          お支払いは決済サービス（Stripe）を通じて行います。購入手続き完了後、ダウンロードページが表示されます。
         </p>
 
         <h2 style={{ marginTop: 22, fontSize: 16, fontWeight: 600 }}>第3条（返品・キャンセル）</h2>
@@ -45,9 +45,10 @@ export default function TermsPage() {
         </p>
 
         <div style={{ marginTop: 18, opacity: 0.6, fontSize: 12 }}>
-          最終更新日：2026-01-10（仮）
+          最終更新日：2026-01-13
         </div>
       </main>
     </SiteFrame>
   );
 }
+
