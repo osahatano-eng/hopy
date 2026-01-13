@@ -11,6 +11,7 @@ function isPng(file) {
 }
 
 function slugFromFilename(file) {
+  // 拡張子は大小無視で除去するので、.png と .PNG は同じslugになる
   return file.replace(/\.png$/i, "");
 }
 
@@ -28,12 +29,32 @@ function main() {
     .filter(isPng)
     .sort((a, b) => a.localeCompare(b));
 
+  // slugの重複を検知（例: y8durmct.png と y8durmct.PNG）
+  const bySlug = new Map();
+  for (const file of files) {
+    const slug = slugFromFilename(file);
+    const list = bySlug.get(slug) ?? [];
+    list.push(file);
+    bySlug.set(slug, list);
+  }
+
+  const duplicates = [...bySlug.entries()].filter(([, list]) => list.length > 1);
+  if (duplicates.length) {
+    const msg = duplicates
+      .map(([slug, list]) => `- slug "${slug}" : ${list.join(", ")}`)
+      .join("\n");
+    throw new Error(
+      `Duplicate slugs detected in public/works. Rename/remove duplicates:\n${msg}\n` +
+        `Tip: ".png" and ".PNG" become the same slug.`
+    );
+  }
+
   const works = files.map((file) => {
     const slug = slugFromFilename(file);
     return {
       slug,
-      image: `/works/${file}`,      // public表示用
-      downloadFile: file,           // private側の同名ファイル
+      image: `/works/${file}`, // public表示用
+      downloadFile: file, // private側の同名ファイル
     };
   });
 
@@ -54,7 +75,9 @@ export const WORKS: WorkBase[] = ${JSON.stringify(works, null, 2)} as const;
   ensureDirExists(path.dirname(OUT_FILE));
   fs.writeFileSync(OUT_FILE, body, "utf8");
 
-  console.log(`Generated: ${path.relative(ROOT, OUT_FILE)} (${works.length} works)`);
+  console.log(
+    `Generated: ${path.relative(ROOT, OUT_FILE)} (${works.length} works)`
+  );
 }
 
 main();
