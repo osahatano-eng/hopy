@@ -10,7 +10,7 @@ export default function TokushohoPage() {
         <div style={{ marginTop: 18, lineHeight: 2.0, opacity: 0.9 }}>
           <div><b>販売事業者</b>：ホピー株式会社</div>
           <div><b>運営責任者</b>：波多野　修</div>
-          <div><b>所在地</b>：東京都練馬区谷原５－９－１３</div>
+          <div><b>所在地</b>：東京都練馬区谷原５-９-１３</div>
           <div><b>連絡先</b>：hatano@hopy.co.jp</div>
           <div><b>販売価格</b>：各商品ページに表示（消費税込）</div>
           <div><b>商品代金以外の必要料金</b>：通信料等はお客様負担</div>
@@ -22,9 +22,10 @@ export default function TokushohoPage() {
         </div>
 
         <div style={{ marginTop: 18, opacity: 0.6, fontSize: 12 }}>
-          最終更新日：2026-01-10（仮）
+          最終更新日：2026-01-13
         </div>
       </main>
     </SiteFrame>
   );
 }
+
