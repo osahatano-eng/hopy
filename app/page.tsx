@@ -185,14 +185,14 @@ export default function HomePage() {
             </div>
 
             <p className="smallP" style={{ marginTop: 14, opacity: 0.78 }}>
-              画像は、あなたが購入する<strong>“最初のフレーム”</strong>。
+              Stillは、あなたのイメージを膨らます<strong>“最初のフレーム”</strong>。
               <br />
-              動画は、そこから動かした<strong>ひとつの例</strong>です。
+              Motionは、イメージを形にした<strong>ひとつの例</strong>です。
               <br />
               <br />
-              このサイトで売っているのは、
+              Stillに、あなたのMotionを。
               <br />
-              完成された映像ではなく、<strong>始まりの1枚</strong>です。
+              完成された1枚ではなく、<strong>始まりの1枚</strong>です。
             </p>
           </div>
 
