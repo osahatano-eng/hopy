@@ -12,7 +12,7 @@ export const WORKS: WorkBase[] = [
   // 既存分も「必ず downloadFile を入れる」
   {
     slug: "y8durmct",
-    image: "/works/y8durmct.png",
+    image: "/works/y8durmct.png?v=2",
     downloadFile: "y8durmct.png",
   },
   {
