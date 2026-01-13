@@ -15,9 +15,14 @@ export const WORKS_META: Record<
     price: 350,
     stripePriceId: "price_1SoqF5PdHZWs1X17cvujvG32",
   },
-
+  "y8durmct": {
+    title: "g4tywz0w",
+    price: 350,
+    stripePriceId: "",
+  },
   
 };
+
 
 
 
