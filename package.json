@@ -1,1 +1,2 @@
-"build": "next build",
+- "build": "npm run works:sync && next build",
++ "build": "next build",
