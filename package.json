@@ -1,2 +1,2 @@
-"build": "..."
-"works:sync": "..."
+"build": "npm run works:sync && next build",
+"works:sync": "node scripts/generate-works.mjs && node scripts/sync-meta.mjs"
