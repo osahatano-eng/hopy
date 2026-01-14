@@ -125,29 +125,6 @@ export default function FavoritesClient() {
                       }}
                     />
                   </div>
-
-                  {/* 購入可能（あなたの運用だと基本全部） */}
-                  {canBuy ? (
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 10,
-                        left: 10,
-                        padding: "6px 10px",
-                        borderRadius: 0,
-                        border: "1px solid rgba(255,255,255,0.16)",
-                        background: "rgba(11,12,15,0.55)",
-                        backdropFilter: "blur(8px)",
-                        fontSize: 11,
-                        letterSpacing: "0.16em",
-                        textTransform: "uppercase",
-                        color: "rgba(242,242,242,0.92)",
-                      }}
-                      aria-hidden="true"
-                    >
-                      Buy
-                    </div>
-                  ) : null}
                 </Link>
 
                 {/* 右上：お気に入り（枠なし・ハートだけ） */}
@@ -179,4 +156,5 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
 
