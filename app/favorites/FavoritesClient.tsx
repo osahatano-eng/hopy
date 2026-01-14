@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { WORKS } from "@/lib/works";
+import { FAVORITES_EVENT } from "@/app/_lib/favorites";
 
 function yen(n: number) {
   return new Intl.NumberFormat("ja-JP").format(n);
@@ -172,7 +173,7 @@ export default function FavoritesClient() {
       }
 
       // 同一タブ内の他コンポーネントがstorageイベントを待ってる場合の保険
-      window.dispatchEvent(new Event("favorites:changed"));
+      window.dispatchEvent(new Event("FAVORITES_EVENT"));
     } catch {
       // ignore
     }
@@ -273,5 +274,6 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
 
 
