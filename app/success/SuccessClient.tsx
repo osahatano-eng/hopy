@@ -17,10 +17,16 @@ function getSessionIdFromUrl() {
 }
 
 export default function SuccessClient({ sessionId }: { sessionId?: string }) {
-  const sid = useMemo(() => (sessionId?.trim() ? sessionId.trim() : getSessionIdFromUrl()), [sessionId]);
+  const sid = useMemo(
+    () => (sessionId?.trim() ? sessionId.trim() : getSessionIdFromUrl()),
+    [sessionId]
+  );
 
   const [items, setItems] = useState<Item[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
+
+  // ✅ 追加：ダウンロード中状態（slugごと）
+  const [downloading, setDownloading] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     // 成功ページに来たらお気に入りを空に（UX）
@@ -50,6 +56,30 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
     run();
   }, [sid]);
 
+  // ✅ 追加：ページ遷移せずにダウンロード開始
+  const startDownload = async (slug: string) => {
+    if (!sid) return;
+
+    setDownloading((m) => ({ ...m, [slug]: true }));
+    try {
+      const url = `/api/download?session_id=${encodeURIComponent(sid)}&slug=${encodeURIComponent(slug)}`;
+
+      // 同一ページのままダウンロードを開始
+      const a = document.createElement("a");
+      a.href = url;
+      a.rel = "noopener";
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } finally {
+      // 連打防止 + UX
+      window.setTimeout(() => {
+        setDownloading((m) => ({ ...m, [slug]: false }));
+      }, 800);
+    }
+  };
+
   return (
     <div style={{ marginTop: 18 }}>
       <div
@@ -72,15 +102,15 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
             <br />
             <span style={{ opacity: 0.7 }}>session_id が取得できているか確認してください。</span>
             <br />
-            <span style={{ opacity: 0.7 }}>
-              （いまの session_id: {sid ? sid : "なし"}）
-            </span>
+            <span style={{ opacity: 0.7 }}>（いまの session_id: {sid ? sid : "なし"}）</span>
           </div>
         )}
 
         {status === "ok" && (
           <>
-            <div style={{ marginTop: 10, fontSize: 13, opacity: 0.85 }}>{items.length}件のダウンロード</div>
+            <div style={{ marginTop: 10, fontSize: 13, opacity: 0.85 }}>
+              {items.length}件のダウンロード
+            </div>
 
             <div className="fullBleed" style={{ marginTop: 14 }}>
               <div className="shortsGrid">
@@ -112,14 +142,23 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
                         />
                       </div>
 
-                      <Link
-  href={`/download/${it.slug}?session_id=${encodeURIComponent(sid)}`}
-  className="btn btnPrimary"
-  style={{ position: "absolute", bottom: 10, left: 10, borderRadius: 0, padding: "10px 12px" }}
->
-  Download
-</Link>
-
+                      {/* ✅ 変更：Linkで遷移しない。ボタンでダウンロード開始 */}
+                      <button
+                        type="button"
+                        className="btn btnPrimary"
+                        style={{
+                          position: "absolute",
+                          bottom: 10,
+                          left: 10,
+                          borderRadius: 0,
+                          padding: "10px 12px",
+                          opacity: downloading[it.slug] ? 0.7 : 1,
+                          pointerEvents: downloading[it.slug] ? "none" : "auto",
+                        }}
+                        onClick={() => startDownload(it.slug)}
+                      >
+                        {downloading[it.slug] ? "準備中…" : "Download"}
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -140,5 +179,3 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
     </div>
   );
 }
-
-
