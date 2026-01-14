@@ -108,13 +108,13 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
             width: "100vw",                // 画面いっぱい
             marginLeft: "50%",
             transform: "translateX(-50%)",// container外にフルブリード
-            textAlign: "left",
+            textAlign: "center",
             fontSize: "clamp(64px, 16vw, 260px)", // ← 超巨大
             letterSpacing: "0.12em",
             lineHeight: 1,
             fontWeight: 500,
             color: "#ffffff",              // 真っ白
-            padding: "28px 0 36px",
+            padding: "36px 0 36px",
             userSelect: "none",
             pointerEvents: "none",
           }}
@@ -125,6 +125,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     </>
   );
 }
+
 
 
 
