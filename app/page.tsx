@@ -14,12 +14,14 @@ function shuffle<T>(arr: T[]) {
   return a;
 }
 
+// ★SSR/初回表示用（固定）：販売中優先で上から8（ランダムなし）
 function pickFeaturedStable() {
   return [...WORKS]
     .sort((a, b) => Number(Boolean(b.stripePriceId)) - Number(Boolean(a.stripePriceId)))
     .slice(0, 8);
 }
 
+// ★クライアント側でだけランダム（販売中優先で強め）
 function pickFeaturedRandomStrong() {
   const sellable = shuffle(WORKS.filter((w) => Boolean(w.stripePriceId)));
   const others = shuffle(WORKS.filter((w) => !w.stripePriceId));
@@ -81,25 +83,19 @@ export default function HomePage() {
 
             <div className="proof">
               <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
-                  映像の起点
-                </strong>
+                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>映像の起点</strong>
                 <br />
                 1枚目から“始まる前提”で設計。
               </div>
 
               <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
-                  9:16最適化
-                </strong>
+                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>9:16最適化</strong>
                 <br />
                 Short / Reels / 壁紙向け。
               </div>
 
               <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
-                  即、動かせる
-                </strong>
+                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>即、動かせる</strong>
                 <br />
                 決済後すぐに納品。やり取りなしで完結します。
               </div>
@@ -113,9 +109,7 @@ export default function HomePage() {
         <section className="section" style={{ paddingTop: 44 }}>
           <div className="container">
             <div className="kicker">Sample</div>
-            <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>
-              1枚から、動く
-            </h2>
+            <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>1枚から、動く</h2>
 
             <div style={{ marginTop: 14 }} className="sampleRow">
               {/* 左：Still */}
@@ -136,7 +130,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* 中央：矢印 */}
+              {/* 中央：矢印＋SAMPLE（左右画像のセンターに固定） */}
               <div className="sampleMid" aria-hidden="true">
                 <div className="sampleArrow">→</div>
                 <div className="sampleLabel">SAMPLE</div>
@@ -170,7 +164,17 @@ export default function HomePage() {
                   />
                 </div>
 
-                <div className="sampleNote">タップで停止／再生（音なし）</div>
+                <div
+                  style={{
+                    marginTop: 8,
+                    fontSize: 12,
+                    opacity: 0.75,
+                    lineHeight: 1.6,
+                    textAlign: "center",
+                  }}
+                >
+                  タップで停止／再生（音なし）
+                </div>
               </div>
             </div>
 
@@ -191,20 +195,14 @@ export default function HomePage() {
               display: grid;
               grid-template-columns: 1fr auto 1fr;
               gap: 10px;
-              align-items: start; /* ← centerをやめて、上端揃え */
+              align-items: start; /* ← center にしない（センターは sampleMid で制御） */
             }
 
-            .sampleCol{ min-width: 0; }
-
-            .sampleCap{
-              height: 26px;            /* ←左右の開始位置を固定 */
+            .sampleCol{
+              min-width: 0;
               display: flex;
+              flex-direction: column;
               align-items: center;
-              justify-content: center;
-              font-size: 12px;
-              opacity: 0.72;
-              text-align: center;
-              margin: 8px 0 0;         /* ←ここだけで余白管理（重ねない） */
             }
 
             .sampleFrame{
@@ -217,36 +215,44 @@ export default function HomePage() {
               border: 1px solid rgba(242,242,242,0.10);
             }
 
-            .sampleNote{
-              margin-top: 8px;
-              font-size: 12px;
-              opacity: 0.75;
-              line-height: 1.6;
-              text-align: center;
-            }
-
-            .sampleMid{
+            /* キャプション高さ固定（左右揃える用） */
+            .sampleCap{
+              height: 26px;
               display: flex;
               align-items: center;
               justify-content: center;
+              font-size: 12px;
+              opacity: 0.72;
+              text-align: center;
+              margin-top: 8px;
+            }
+
+            /* 中央：左右画像の“画像領域”のセンターに固定 */
+            .sampleMid{
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              height: 100%;
+              transform: translateY(26px); /* ← キャプション分だけ下げて画像中央に合わせる */
               gap: 10px;
-              padding: 6px 0;
               opacity: 0.85;
               user-select: none;
+              padding: 0 6px;
             }
 
             .sampleArrow{
-              font-size: 18px;
+              font-size: 28px;
               line-height: 1;
               opacity: 0.95;
             }
 
             .sampleLabel{
-              font-size: 10px;
+              font-size: 11px;
               letter-spacing: 0.22em;
               opacity: 0.7;
               border: 1px solid rgba(255,255,255,0.18);
-              padding: 5px 8px;
+              padding: 6px 10px;
               background: rgba(0,0,0,0.12);
               white-space: nowrap;
             }
@@ -254,19 +260,23 @@ export default function HomePage() {
             /* ★スマホ時だけ → を ↓ に */
             @media (max-width: 919px){
               .sampleRow{
-                grid-template-columns: 1fr; /* ←縦並び */
+                grid-template-columns: 1fr;  /* 縦積み */
                 gap: 12px;
               }
 
               .sampleMid{
+                transform: none;            /* 縦積み時は不要 */
+                height: auto;
                 flex-direction: row;
-                padding: 0;
+                gap: 10px;
+                padding: 6px 0;
               }
 
               .sampleArrow{
                 visibility: hidden;
                 position: relative;
-                height: 18px;
+                width: 1em;
+                height: 1em;
               }
               .sampleArrow::before{
                 content: "↓";
@@ -277,19 +287,17 @@ export default function HomePage() {
                 text-align: center;
               }
             }
-
-            @media (min-width: 920px){
-              .sampleRow{ gap: 18px; }
-              .sampleMid{ flex-direction: column; padding: 0 6px; }
-              .sampleArrow{ font-size: 28px; }
-              .sampleLabel{ font-size: 11px; padding: 6px 10px; }
-            }
           `}</style>
         </section>
 
         <hr className="hr" />
 
-        {/* 以下 Featured / How it works / Licensing は変更なし */}
+        {/* ▼ここから下（Featured / How it works / Licensing 等）は、あなたの元のまま貼ってください */}
+        {/* featuredWorks / canHover を使っている箇所もそのまま残してOK */}
+
+        {/* 例：あなたの元コードの続きがここに入る */}
+        {/* ... */}
+
       </main>
     </SiteFrame>
   );
