@@ -83,19 +83,25 @@ export default function HomePage() {
 
             <div className="proof">
               <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>映像の起点</strong>
+                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
+                  映像の起点
+                </strong>
                 <br />
                 1枚目から“始まる前提”で設計。
               </div>
 
               <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>9:16最適化</strong>
+                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
+                  9:16最適化
+                </strong>
                 <br />
                 Short / Reels / 壁紙向け。
               </div>
 
               <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>即、動かせる</strong>
+                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
+                  即、動かせる
+                </strong>
                 <br />
                 決済後すぐに納品。やり取りなしで完結します。
               </div>
@@ -109,7 +115,9 @@ export default function HomePage() {
         <section className="section" style={{ paddingTop: 44 }}>
           <div className="container">
             <div className="kicker">Sample</div>
-            <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>1枚から、動く</h2>
+            <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>
+              1枚から、動く
+            </h2>
 
             <div style={{ marginTop: 14 }} className="sampleRow">
               {/* 左：Still */}
@@ -130,7 +138,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* 中央：矢印＋SAMPLE（左右画像のセンターに固定） */}
+              {/* 中央：矢印＋SAMPLE（画像と画像の間のセンターに） */}
               <div className="sampleMid" aria-hidden="true">
                 <div className="sampleArrow">→</div>
                 <div className="sampleLabel">SAMPLE</div>
@@ -195,7 +203,7 @@ export default function HomePage() {
               display: grid;
               grid-template-columns: 1fr auto 1fr;
               gap: 10px;
-              align-items: start; /* ← center にしない（センターは sampleMid で制御） */
+              align-items: start;
             }
 
             .sampleCol{
@@ -215,7 +223,7 @@ export default function HomePage() {
               border: 1px solid rgba(242,242,242,0.10);
             }
 
-            /* キャプション高さ固定（左右揃える用） */
+            /* キャプション高さ固定（左右揃える） */
             .sampleCap{
               height: 26px;
               display: flex;
@@ -227,14 +235,14 @@ export default function HomePage() {
               margin-top: 8px;
             }
 
-            /* 中央：左右画像の“画像領域”のセンターに固定 */
+            /* 中央（画像と画像の間のセンターに） */
             .sampleMid{
               display: flex;
               flex-direction: column;
               align-items: center;
               justify-content: center;
               height: 100%;
-              transform: translateY(26px); /* ← キャプション分だけ下げて画像中央に合わせる */
+              transform: translateY(26px); /* キャプション分だけ下げる */
               gap: 10px;
               opacity: 0.85;
               user-select: none;
@@ -260,12 +268,12 @@ export default function HomePage() {
             /* ★スマホ時だけ → を ↓ に */
             @media (max-width: 919px){
               .sampleRow{
-                grid-template-columns: 1fr;  /* 縦積み */
+                grid-template-columns: 1fr;
                 gap: 12px;
               }
 
               .sampleMid{
-                transform: none;            /* 縦積み時は不要 */
+                transform: none;
                 height: auto;
                 flex-direction: row;
                 gap: 10px;
@@ -292,11 +300,114 @@ export default function HomePage() {
 
         <hr className="hr" />
 
-        {/* ▼ここから下（Featured / How it works / Licensing 等）は、あなたの元のまま貼ってください */}
-        {/* featuredWorks / canHover を使っている箇所もそのまま残してOK */}
+        {/* ✅ FEATURED（復活） */}
+        <section className="section">
+          <div className="container">
+            <div className="kicker">Featured</div>
+            <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>
+              いま、選ばれているフレーム
+            </h2>
 
-        {/* 例：あなたの元コードの続きがここに入る */}
-        {/* ... */}
+            <div style={{ marginTop: 14 }} className="featuredGrid">
+              {featuredWorks.map((w: any) => (
+                <Link
+                  key={w.slug}
+                  href={`/p/${w.slug}`}
+                  className="featuredTile"
+                  style={{
+                    position: "relative",
+                    display: "block",
+                    overflow: "hidden",
+                    borderRadius: 0,
+                    border: "1px solid rgba(255,255,255,0.10)",
+                    transform: canHover ? "translateZ(0)" : undefined,
+                  }}
+                >
+                  <div className="featuredFrame">
+                    <img
+                      src={w.image}
+                      alt={w.title ?? w.slug}
+                      className="featuredImg"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                        transition: canHover ? "transform 260ms ease" : undefined,
+                      }}
+                    />
+                  </div>
+
+                  <div className="featuredMeta">
+                    <div className="featuredTitle">{w.title ?? w.slug}</div>
+                    <div className="featuredSub">
+                      {w.stripePriceId ? "販売中" : "準備中"}
+                      {" · "}
+                      ¥{Number(w.price ?? 0).toLocaleString("ja-JP")}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
+              <Link className="btn btnPrimary" href="/works">
+                作品一覧で選ぶ
+              </Link>
+              <Link className="btn" href="/favorites">
+                保存したフレームを見る
+              </Link>
+            </div>
+          </div>
+
+          <style>{`
+            .featuredGrid{
+              display:grid;
+              grid-template-columns: repeat(2, minmax(0,1fr));
+              gap: 12px;
+            }
+
+            @media (min-width: 920px){
+              .featuredGrid{
+                grid-template-columns: repeat(4, minmax(0,1fr));
+                gap: 14px;
+              }
+            }
+
+            .featuredFrame{
+              width: 100%;
+              aspect-ratio: 4 / 5;
+              overflow: hidden;
+              background: rgba(242,242,242,0.05);
+            }
+
+            .featuredTile:hover .featuredImg{
+              transform: scale(1.02);
+            }
+
+            .featuredMeta{
+              padding: 10px 10px 12px;
+              background: rgba(0,0,0,0.18);
+              border-top: 1px solid rgba(255,255,255,0.08);
+            }
+
+            .featuredTitle{
+              font-size: 12px;
+              opacity: 0.92;
+              line-height: 1.4;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            .featuredSub{
+              margin-top: 6px;
+              font-size: 11px;
+              opacity: 0.7;
+              letter-spacing: 0.02em;
+            }
+          `}</style>
+        </section>
 
       </main>
     </SiteFrame>
