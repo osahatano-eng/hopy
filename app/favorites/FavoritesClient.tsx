@@ -55,7 +55,6 @@ function findFavoritesStorageKeyBySlug(targetSlug: string): string | null {
       try {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.every((x) => typeof x === "string")) {
-          // WORKSのslugだけで構成されている配列で、かつ targetSlug を含む
           const filtered = parsed.filter((s) => allSlugs.has(s));
           if (filtered.length === parsed.length && parsed.includes(targetSlug)) {
             return key;
@@ -141,9 +140,7 @@ export default function FavoritesClient() {
 
       if (!res.ok || !data?.ok || !data?.url) {
         const apiMsg =
-          typeof data?.message === "string" && data.message.trim().length > 0
-            ? data.message
-            : null;
+          typeof data?.message === "string" && data.message.trim().length > 0 ? data.message : null;
 
         setMsg(apiMsg ?? `購入開始に失敗: ${data?.error ?? "unknown_error"}（status ${res.status}）`);
         return;
@@ -157,12 +154,12 @@ export default function FavoritesClient() {
     }
   }
 
-  // ✅ ここが本命：解除した瞬間に「画像も合計もヘッダー数字も」全部リアルタイム更新
+  // ✅ 解除した瞬間に「画像も合計もヘッダー数字も」全部リアルタイム更新
   function removeFromFavorites(slug: string) {
     // 1) 画面を即更新
     setSlugs((prev) => prev.filter((s) => s !== slug));
 
-    // 2) localStorage を確実に更新（「slugを含むキー」を探して更新する）
+    // 2) localStorage を確実に更新
     try {
       const key = findFavoritesStorageKeyBySlug(slug);
       if (key) {
@@ -177,7 +174,7 @@ export default function FavoritesClient() {
       // ignore
     }
 
-    // 3) ヘッダーの数字（FavoritesCount）へ即通知
+    // 3) ヘッダーの数字へ即通知
     window.dispatchEvent(new Event(FAVORITES_EVENT));
   }
 
@@ -202,7 +199,6 @@ export default function FavoritesClient() {
             作品を追加して探す
           </Link>
 
-
           <div style={{ fontSize: 12, opacity: 0.75 }}>
             {items.length}件 / 販売中 {sellable.length}件
           </div>
@@ -213,7 +209,8 @@ export default function FavoritesClient() {
         ) : null}
       </div>
 
-      <div className="fullBleed" style={{ marginTop: 16 }}>
+      {/* ✅ fullBleed を外して、Worksと同じ「2列→4列」グリッドに */}
+      <div style={{ marginTop: 16 }}>
         <div className="shortsGrid">
           {items.map((w: any) => (
             <div key={w.slug} style={{ position: "relative" }}>
@@ -272,8 +269,27 @@ export default function FavoritesClient() {
           ))}
         </div>
       </div>
+
+      {/* ✅ このページ内で Works と同じグリッド定義を持たせる */}
+      <style>{`
+        .shortsGrid{
+          display:grid;
+          grid-template-columns: repeat(2, minmax(0,1fr));
+          gap: 12px;
+        }
+
+        @media (min-width: 920px){
+          .shortsGrid{
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 14px;
+          }
+        }
+
+        /* PC hover：少し明転 */
+        @media (hover: hover) and (pointer: fine) {
+          .shortsTile:hover .shortsImg { filter: brightness(1.14); }
+        }
+      `}</style>
     </div>
   );
 }
-
-
