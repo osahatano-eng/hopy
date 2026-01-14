@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { WORKS } from "@/lib/works";
-import FavoriteButton from "@/app/_components/FavoriteButton";
 
 function yen(n: number) {
   return new Intl.NumberFormat("ja-JP").format(n);
@@ -13,7 +12,7 @@ function yen(n: number) {
 function detectFavoriteSlugs(): string[] {
   try {
     const allSlugs = new Set(WORKS.map((w) => w.slug));
-    const candidates: string[][] = [];
+    const candidates: { key: string; slugs: string[] }[] = [];
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -22,24 +21,57 @@ function detectFavoriteSlugs(): string[] {
       const raw = localStorage.getItem(key);
       if (!raw) continue;
 
-      // JSON配列を試す
       try {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.every((x) => typeof x === "string")) {
-          // WORKSのslugだけで構成されている配列を候補にする
           const filtered = parsed.filter((s) => allSlugs.has(s));
-          if (filtered.length > 0 && filtered.length === parsed.length) candidates.push(filtered);
+          if (filtered.length > 0 && filtered.length === parsed.length) {
+            candidates.push({ key, slugs: filtered });
+          }
         }
       } catch {
         // ignore
       }
     }
 
-    // いちばん長い配列を採用（お気に入りが増えても追従）
-    candidates.sort((a, b) => b.length - a.length);
-    return candidates[0] ?? [];
+    // いちばん長い配列を採用
+    candidates.sort((a, b) => b.slugs.length - a.slugs.length);
+    return candidates[0]?.slugs ?? [];
   } catch {
     return [];
+  }
+}
+
+// Favoritesの保存先キーを推定（detectと同じロジックで「採用されたキー」を返す）
+function detectFavoriteStorageKey(): string | null {
+  try {
+    const allSlugs = new Set(WORKS.map((w) => w.slug));
+    const candidates: { key: string; len: number }[] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.every((x) => typeof x === "string")) {
+          const filtered = parsed.filter((s) => allSlugs.has(s));
+          if (filtered.length > 0 && filtered.length === parsed.length) {
+            candidates.push({ key, len: filtered.length });
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    candidates.sort((a, b) => b.len - a.len);
+    return candidates[0]?.key ?? null;
+  } catch {
+    return null;
   }
 }
 
@@ -59,7 +91,6 @@ export default function FavoritesClient() {
     window.addEventListener("focus", refresh);
     document.addEventListener("visibilitychange", onVis);
 
-    // storageイベント（別タブ操作にも追従）
     const onStorage = () => refresh();
     window.addEventListener("storage", onStorage);
 
@@ -84,9 +115,6 @@ export default function FavoritesClient() {
     () => sellable.reduce((sum: number, w: any) => sum + (typeof w.price === "number" ? w.price : 0), 0),
     [sellable]
   );
-
-  // ✅ ハートOFFしたら即反映（localStorage更新の直後にslugsを再取得）
-  const refresh = () => setSlugs(detectFavoriteSlugs());
 
   async function checkoutAll() {
     setMsg("");
@@ -114,8 +142,7 @@ export default function FavoritesClient() {
             ? data.message
             : null;
 
-        if (apiMsg) setMsg(apiMsg);
-        else setMsg(`購入開始に失敗: ${data?.error ?? "unknown_error"}（status ${res.status}）`);
+        setMsg(apiMsg ?? `購入開始に失敗: ${data?.error ?? "unknown_error"}（status ${res.status}）`);
         return;
       }
 
@@ -124,6 +151,30 @@ export default function FavoritesClient() {
       setMsg(`通信エラー: ${e?.message ?? String(e)}`);
     } finally {
       setBusy(false);
+    }
+  }
+
+  // ✅ ここが本命：Favoritesページ内で「解除」を即時反映（画像消える＆合計も即更新）
+  function removeFromFavorites(slug: string) {
+    // 1) 画面を即更新（これで画像/件数/合計がリアルタイムに変わる）
+    setSlugs((prev) => prev.filter((s) => s !== slug));
+
+    // 2) localStorageも確実に更新（次回リロードでも残らない）
+    try {
+      const key = detectFavoriteStorageKey();
+      if (!key) return;
+
+      const raw = localStorage.getItem(key);
+      const arr = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(arr)) {
+        const next = arr.filter((s) => s !== slug);
+        localStorage.setItem(key, JSON.stringify(next));
+      }
+
+      // 同一タブ内の他コンポーネントがstorageイベントを待ってる場合の保険
+      window.dispatchEvent(new Event("storage"));
+    } catch {
+      // ignore
     }
   }
 
@@ -148,7 +199,7 @@ export default function FavoritesClient() {
             作品を追加して探す
           </Link>
 
-          <button className="btn" type="button" onClick={refresh} style={{ borderRadius: 0 }}>
+          <button className="btn" type="button" onClick={() => setSlugs(detectFavoriteSlugs())} style={{ borderRadius: 0 }}>
             更新
           </button>
 
@@ -166,7 +217,6 @@ export default function FavoritesClient() {
         <div className="shortsGrid">
           {items.map((w: any) => (
             <div key={w.slug} style={{ position: "relative" }}>
-              {/* タイル（詳細へ） */}
               <Link
                 href={`/p/${w.slug}`}
                 className="shortsTile"
@@ -188,21 +238,34 @@ export default function FavoritesClient() {
                 </div>
               </Link>
 
-              {/* ✅ Favoritesページにもハート表示（OFFでこのページから消える） */}
-              <div
-                style={{ position: "absolute", top: 10, right: 10, zIndex: 10 }}
+              {/* ✅ Favorites内専用：クリックで即解除（表示も合計も即変わる） */}
+              <button
+                type="button"
+                aria-label="お気に入り解除"
                 onClick={(e) => {
-                  // Linkのクリックを防ぐ
                   e.preventDefault();
                   e.stopPropagation();
-
-                  // FavoriteButtonがlocalStorageを更新した直後に再取得
-                  // 1tick遅らせると確実
-                  setTimeout(() => refresh(), 0);
+                  removeFromFavorites(w.slug);
                 }}
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  zIndex: 10,
+                  width: 34,
+                  height: 34,
+                  borderRadius: 0,
+                  border: "1px solid rgba(255,255,255,0.22)",
+                  background: "rgba(0,0,0,0.35)",
+                  color: "white",
+                  display: "grid",
+                  placeItems: "center",
+                  cursor: "pointer",
+                }}
+                title="お気に入り解除"
               >
-                <FavoriteButton slug={w.slug} />
-              </div>
+                ♡
+              </button>
             </div>
           ))}
         </div>
