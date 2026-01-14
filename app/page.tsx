@@ -301,18 +301,15 @@ export default function HomePage() {
 
         <hr className="hr" />
 
-        {/* ✅ FEATURED（fullBleed＋♡追加） */}
+        {/* ✅ FEATURED（container内のまま、♡追加） */}
         <section className="section">
           <div className="container">
             <div className="kicker">Featured</div>
             <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>
               いま、選ばれているフレーム
             </h2>
-          </div>
 
-          {/* ここを fullBleed にして Works と同じ「画面幅」グリッドにする */}
-          <div style={{ marginTop: 16 }}>
-            <div className="featuredGrid">
+            <div style={{ marginTop: 14 }} className="featuredGrid">
               {featuredWorks.map((w: any) => (
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
@@ -351,14 +348,9 @@ export default function HomePage() {
                     </div>
                   </Link>
 
-                  {/* ★ 右上：お気に入り（Worksと同じやり方：押してもリンクへ飛ばさない） */}
+                  {/* ★ 右上：お気に入り（押してもリンクへ飛ばない） */}
                   <div
-                    style={{
-                      position: "absolute",
-                      top: 10,
-                      right: 10,
-                      zIndex: 3,
-                    }}
+                    style={{ position: "absolute", top: 10, right: 10, zIndex: 3 }}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -371,9 +363,7 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-          </div>
 
-          <div className="container">
             <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
               <Link className="btn btnPrimary" href="/works">
                 作品一覧で選ぶ
@@ -389,14 +379,12 @@ export default function HomePage() {
               display:grid;
               grid-template-columns: repeat(2, minmax(0,1fr));
               gap: 12px;
-              padding: 0 18px; /* fullBleedの端に少し余白（邪魔なら消してOK） */
             }
 
             @media (min-width: 920px){
               .featuredGrid{
                 grid-template-columns: repeat(4, minmax(0,1fr));
                 gap: 14px;
-                padding: 0 24px;
               }
             }
 
