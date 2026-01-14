@@ -5,8 +5,24 @@ import { useEffect, useMemo, useState } from "react";
 import { WORKS } from "@/lib/works";
 import FavoriteButton from "@/app/_components/FavoriteButton";
 
-// localStorage の保存キー（もし既存が違うなら、ここだけ合わせればOK）
+// ★あなたのFavoriteButtonが使ってるキーが違う場合はここだけ合わせる
 const FAVORITES_KEY = "favorites";
+
+// WORKS要素型
+type Work = (typeof WORKS)[number];
+
+// stripePriceId / priceYen を「存在するなら読む」ための安全アクセサ
+function getStripePriceId(w: unknown): string | null {
+  if (!w || typeof w !== "object") return null;
+  const v = (w as { stripePriceId?: unknown }).stripePriceId;
+  return typeof v === "string" && v.length > 0 ? v : null;
+}
+function getPriceYen(w: unknown): number {
+  if (!w || typeof w !== "object") return 0;
+  const v = (w as { priceYen?: unknown }).priceYen;
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
 
 function readFavorites(): string[] {
   try {
@@ -22,12 +38,10 @@ function readFavorites(): string[] {
 export default function FavoritesClient() {
   const [slugs, setSlugs] = useState<string[]>([]);
 
-  // 初回ロード
   useEffect(() => {
     setSlugs(readFavorites());
   }, []);
 
-  // 他タブ/他ページでお気に入り更新したとき追従
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === FAVORITES_KEY) setSlugs(readFavorites());
@@ -36,28 +50,24 @@ export default function FavoritesClient() {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const favoriteWorks = useMemo(() => {
+  const favoriteWorks: Work[] = useMemo(() => {
     const set = new Set(slugs);
-    return WORKS.filter((w: any) => set.has(w.slug));
+    return WORKS.filter((w) => set.has(w.slug));
   }, [slugs]);
 
-  // 売れるやつ（stripePriceIdがあるやつ）
-  const sellableWorks = useMemo(
-    () => favoriteWorks.filter((w: any) => Boolean(w.stripePriceId)),
-    [favoriteWorks]
-  );
+  const sellableWorks = useMemo(() => {
+    return favoriteWorks.filter((w) => Boolean(getStripePriceId(w)));
+  }, [favoriteWorks]);
 
-  const sellableSlugs = useMemo(() => sellableWorks.map((w: any) => w.slug), [sellableWorks]);
+  const sellableSlugs = useMemo(() => sellableWorks.map((w) => w.slug), [sellableWorks]);
 
-  // 合計（priceYen がある前提。無い場合は 0 扱い）
   const totalYen = useMemo(() => {
-    return sellableWorks.reduce((sum: number, w: any) => sum + Number(w.priceYen ?? 0), 0);
+    return sellableWorks.reduce((sum, w) => sum + getPriceYen(w), 0);
   }, [sellableWorks]);
 
   async function buyAll() {
-    // 売れるものが0なら、サーバーに行く前に止める
     if (sellableSlugs.length === 0) {
-      alert("購入可能な作品がありません。");
+      window.alert("購入可能な作品がありません。");
       return;
     }
 
@@ -67,10 +77,10 @@ export default function FavoritesClient() {
       body: JSON.stringify({ slugs: sellableSlugs }),
     });
 
-    const data = await res.json().catch(() => ({} as any));
+    const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
 
-    if (!res.ok || !data?.url) {
-      alert(data?.error ?? "購入処理に失敗しました");
+    if (!res.ok || !data.url) {
+      window.alert(data.error ?? "購入処理に失敗しました");
       return;
     }
 
@@ -84,7 +94,6 @@ export default function FavoritesClient() {
         <div style={{ fontSize: 28, fontWeight: 600, marginTop: 6 }}>保存したフレーム</div>
       </div>
 
-      {/* NEXT STEP box */}
       <div
         style={{
           marginTop: 18,
@@ -116,10 +125,9 @@ export default function FavoritesClient() {
         </div>
       </div>
 
-      {/* grid */}
       <div className="fullBleed" style={{ marginTop: 18 }}>
         <div className="shortsGrid">
-          {favoriteWorks.map((w: any) => (
+          {favoriteWorks.map((w) => (
             <div key={w.slug} style={{ position: "relative" }}>
               <Link
                 href={`/p/${w.slug}`}
@@ -135,7 +143,7 @@ export default function FavoritesClient() {
               >
                 <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
                   <img
-                    src={w.image}
+                    src={(w as { image: string }).image}
                     alt={w.slug}
                     className="shortsImg"
                     style={{
@@ -150,7 +158,6 @@ export default function FavoritesClient() {
                 </div>
               </Link>
 
-              {/* 右上：お気に入り */}
               <div
                 style={{ position: "absolute", top: 10, right: 10, zIndex: 3 }}
                 onClick={(e) => e.preventDefault()}
