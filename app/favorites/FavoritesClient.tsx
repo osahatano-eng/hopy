@@ -265,7 +265,7 @@ export default function FavoritesClient() {
                   borderRadius: 0,
                   border: "1px solid rgba(255,255,255,0.22)",
                   background: "rgba(0,0,0,0.35)",
-                  color: "#ff4d6d",
+                  color: "white",
                   display: "grid",
                   placeItems: "center",
                   cursor: "pointer",
@@ -283,3 +283,4 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
