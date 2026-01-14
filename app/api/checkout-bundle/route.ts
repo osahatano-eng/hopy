@@ -1,62 +1,52 @@
-import { NextResponse } from "next/server";
+// app/api/checkout-bundle/route.ts
 import Stripe from "stripe";
 import { WORKS } from "@/lib/works";
 
 export const runtime = "nodejs";
 
-function baseUrl() {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
-  );
-}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-06-20",
+});
+
+type Body = { slugs?: string[] };
 
 export async function POST(req: Request) {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) {
-    return NextResponse.json({ ok: false, error: "missing_STRIPE_SECRET_KEY" }, { status: 500 });
+  const { slugs } = (await req.json().catch(() => ({}))) as Body;
+
+  const list = Array.isArray(slugs) ? slugs.filter((s) => typeof s === "string") : [];
+  if (list.length === 0) {
+    return Response.json({ ok: false, error: "no_items" }, { status: 400 });
   }
 
-  // ✅ ここで初めて生成（ビルド時に落ちない）
-  const stripe = new Stripe(key);
+  // slugs -> works
+  const items = list
+    .map((slug) => WORKS.find((w) => w.slug === slug))
+    .filter(Boolean) as any[];
 
-  let slugs: string[] = [];
-  const ct = req.headers.get("content-type") || "";
-
-  try {
-    if (ct.includes("application/json")) {
-      const body = await req.json();
-      slugs = Array.isArray(body?.slugs) ? body.slugs.map(String) : [];
-    } else {
-      const form = await req.formData();
-      slugs = form.getAll("slugs").map((v) => String(v));
-      const one = form.get("slug");
-      if (slugs.length === 0 && one) slugs = [String(one)];
-    }
-  } catch {
-    slugs = [];
+  const sellable = items.filter((w) => Boolean(w.stripePriceId));
+  if (sellable.length === 0) {
+    return Response.json({ ok: false, error: "no_sellable_items" }, { status: 400 });
   }
 
-  slugs = Array.from(new Set(slugs)).filter(Boolean);
-
-  const works = WORKS.filter((w) => slugs.includes(w.slug) && Boolean(w.stripePriceId));
-  if (works.length === 0) {
-    return NextResponse.json({ ok: false, error: "no_sellable_items" }, { status: 400 });
-  }
-
-  const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = works.map((w) => ({
-    price: w.stripePriceId!,
-    quantity: 1,
-  }));
-
-  const url = baseUrl();
+  const origin = new URL(req.url).origin;
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    line_items,
-    success_url: `${url}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${url}/favorites`,
+    line_items: sellable.map((w) => ({
+      price: w.stripePriceId,
+      quantity: 1,
+    })),
+    success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/favorites`,
   });
 
-  return NextResponse.redirect(session.url!, 303);
+  return Response.json({ ok: true, url: session.url });
+}
+
+// ブラウザで /api/checkout-bundle を直接開いた時に買えないようにする（今回の事故防止）
+export async function GET() {
+  return Response.json(
+    { ok: false, error: "method_not_allowed_use_post" },
+    { status: 405 }
+  );
 }
