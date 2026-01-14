@@ -202,14 +202,6 @@ export default function FavoritesClient() {
             作品を追加して探す
           </Link>
 
-          <button
-            className="btn"
-            type="button"
-            onClick={() => setSlugs(detectFavoriteSlugs())}
-            style={{ borderRadius: 0 }}
-          >
-            更新
-          </button>
 
           <div style={{ fontSize: 12, opacity: 0.75 }}>
             {items.length}件 / 販売中 {sellable.length}件
@@ -283,4 +275,5 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
 
