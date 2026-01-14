@@ -172,7 +172,7 @@ export default function FavoritesClient() {
       }
 
       // 同一タブ内の他コンポーネントがstorageイベントを待ってる場合の保険
-      window.dispatchEvent(new Event("storage"));
+      window.dispatchEvent(new Event("favorites:changed"));
     } catch {
       // ignore
     }
@@ -273,4 +273,5 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
 
