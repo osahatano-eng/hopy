@@ -99,10 +99,20 @@ export default function FavoritesClient() {
         body: JSON.stringify({ slugs: sellableSlugs }),
       });
 
-      const data = await res.json().catch(() => ({}));
+      const data: any = await res.json().catch(() => ({}));
 
       if (!res.ok || !data?.ok || !data?.url) {
-        setMsg(`購入開始に失敗: ${data?.error ?? "unknown_error"}（status ${res.status}）`);
+        // ✅ APIが返す message を最優先で表示（審査中ガード等）
+        const apiMsg =
+          typeof data?.message === "string" && data.message.trim().length > 0
+            ? data.message
+            : null;
+
+        if (apiMsg) {
+          setMsg(apiMsg);
+        } else {
+          setMsg(`購入開始に失敗: ${data?.error ?? "unknown_error"}（status ${res.status}）`);
+        }
         return;
       }
 
@@ -136,7 +146,12 @@ export default function FavoritesClient() {
             作品を追加して探す
           </Link>
 
-          <button className="btn" type="button" onClick={() => setSlugs(detectFavoriteSlugs())} style={{ borderRadius: 0 }}>
+          <button
+            className="btn"
+            type="button"
+            onClick={() => setSlugs(detectFavoriteSlugs())}
+            style={{ borderRadius: 0 }}
+          >
             更新
           </button>
 
@@ -166,7 +181,12 @@ export default function FavoritesClient() {
               }}
             >
               <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
-                <img src={w.image} alt={w.slug} className="shortsImg" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                <img
+                  src={w.image}
+                  alt={w.slug}
+                  className="shortsImg"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
               </div>
             </Link>
           ))}
