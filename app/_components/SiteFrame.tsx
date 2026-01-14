@@ -108,7 +108,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
             width: "100vw",                // 画面いっぱい
             marginLeft: "50%",
             transform: "translateX(-50%)",// container外にフルブリード
-            textAlign: "center",
+            textAlign: "left",
             fontSize: "clamp(64px, 16vw, 260px)", // ← 超巨大
             letterSpacing: "0.12em",
             lineHeight: 1,
@@ -125,6 +125,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     </>
   );
 }
+
 
 
 
