@@ -5,34 +5,27 @@ export const runtime = "nodejs";
 
 type Body = { slugs?: string[] };
 
-function getStripePriceId(w: unknown): string | null {
-  if (!w || typeof w !== "object") return null;
-  const v = (w as { stripePriceId?: unknown }).stripePriceId;
-  return typeof v === "string" && v.length > 0 ? v : null;
-}
-
 export async function POST(req: Request) {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) {
     return Response.json({ ok: false, error: "missing_stripe_secret_key" }, { status: 500 });
   }
 
-  const stripe = new Stripe(key, { apiVersion: "2024-06-20" });
+  // ✅ apiVersion を指定しない（型エラー回避）
+  const stripe = new Stripe(key);
 
-  const body = (await req.json().catch(() => ({}))) as Body;
-  const list = Array.isArray(body.slugs) ? body.slugs.filter((s) => typeof s === "string") : [];
+  const { slugs } = (await req.json().catch(() => ({}))) as Body;
+  const list = Array.isArray(slugs) ? slugs.filter((s) => typeof s === "string") : [];
 
   if (list.length === 0) {
     return Response.json({ ok: false, error: "no_items" }, { status: 400 });
   }
 
-  const picked = list
-    .map((slug) => WORKS.find((w) => w.slug === slug))
-    .filter(Boolean);
+  const picked = list.map((slug) => WORKS.find((w) => w.slug === slug)).filter(Boolean);
 
   const sellable = picked
-    .map((w) => ({ price: getStripePriceId(w) }))
-    .filter((x): x is { price: string } => Boolean(x.price));
+    .map((w) => (typeof (w as any).stripePriceId === "string" ? (w as any).stripePriceId : null))
+    .filter((p): p is string => Boolean(p));
 
   if (sellable.length === 0) {
     return Response.json({ ok: false, error: "no_sellable_items" }, { status: 400 });
@@ -42,7 +35,7 @@ export async function POST(req: Request) {
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    line_items: sellable.map((x) => ({ price: x.price, quantity: 1 })),
+    line_items: sellable.map((price) => ({ price, quantity: 1 })),
     success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/favorites`,
   });
@@ -51,6 +44,5 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  // GETで直アクセスされたら必ず止める（今回の事故防止）
   return Response.json({ ok: false, error: "use_post" }, { status: 405 });
 }
