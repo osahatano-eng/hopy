@@ -117,76 +117,62 @@ export default function HomePage() {
               1枚から、動く
             </h2>
 
-<div style={{ marginTop: 14 }} className="sampleRow">
-  {/* 左：Still */}
-  <div className="sampleCol">
-    <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
-      <div className="sampleCap">Still（購入ページで見る1枚）</div>
-    </div>
-    <div className="sampleFrame">
-      <img
-        src="/samples/quiet-fire.png"
-        alt="quiet-fire sample still"
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          display: "block",
-        }}
-      />
-    </div>
-  </div>
+            <div style={{ marginTop: 14 }} className="sampleRow">
+              {/* 左：Still */}
+              <div className="sampleCol">
+                <div className="sampleCap">Still（購入ページで見る1枚）</div>
 
-  {/* 中央：矢印 */}
-  <div className="sampleMid" aria-hidden="true">
-    <div className="sampleArrow">→</div>
-    <div className="sampleLabel">SAMPLE</div>
-  </div>
+                <div className="sampleFrame">
+                  <img
+                    src="/samples/quiet-fire.png"
+                    alt="quiet-fire sample still"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </div>
+              </div>
 
-  {/* 右：Motion */}
-  <div className="sampleCol">
-    <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
-      <div className="sampleCap">Motion（1枚を起点に動かした例）</div>
-    </div>
+              {/* 中央：矢印 */}
+              <div className="sampleMid" aria-hidden="true">
+                <div className="sampleArrow">→</div>
+                <div className="sampleLabel">SAMPLE</div>
+              </div>
 
-    <div className="sampleFrame">
-      <video
-        src="/videos/quiet-fire.mp4"
-        muted
-        playsInline
-        autoPlay
-        loop
-        preload="metadata"
-        controls={false}
-        onClick={(e) => {
-          const v = e.currentTarget;
-          if (v.paused) v.play();
-          else v.pause();
-        }}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          display: "block",
-          cursor: "pointer",
-        }}
-      />
-    </div>
+              {/* 右：Motion */}
+              <div className="sampleCol">
+                <div className="sampleCap">Motion（1枚を起点に動かした例）</div>
 
-    <div
-      style={{
-        marginTop: 8,
-        fontSize: 12,
-        opacity: 0.75,
-        lineHeight: 1.6,
-        textAlign: "center",
-      }}
-    >
-      タップで停止／再生（音なし）
-    </div>
-  </div>
-</div>
+                <div className="sampleFrame">
+                  <video
+                    src="/videos/quiet-fire.mp4"
+                    muted
+                    playsInline
+                    autoPlay
+                    loop
+                    preload="metadata"
+                    controls={false}
+                    onClick={(e) => {
+                      const v = e.currentTarget;
+                      if (v.paused) v.play();
+                      else v.pause();
+                    }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                      cursor: "pointer",
+                    }}
+                  />
+                </div>
 
+                <div className="sampleNote">タップで停止／再生（音なし）</div>
+              </div>
+            </div>
 
             <p className="smallP" style={{ marginTop: 14, opacity: 0.78 }}>
               Stillは、あなたのイメージを膨らます<strong>“最初のフレーム”</strong>。
@@ -205,10 +191,21 @@ export default function HomePage() {
               display: grid;
               grid-template-columns: 1fr auto 1fr;
               gap: 10px;
-              align-items: center;
+              align-items: start; /* ← centerをやめて、上端揃え */
             }
 
             .sampleCol{ min-width: 0; }
+
+            .sampleCap{
+              height: 26px;            /* ←左右の開始位置を固定 */
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 12px;
+              opacity: 0.72;
+              text-align: center;
+              margin: 8px 0 0;         /* ←ここだけで余白管理（重ねない） */
+            }
 
             .sampleFrame{
               width: 100%;
@@ -218,6 +215,14 @@ export default function HomePage() {
               overflow: hidden;
               background: rgba(242,242,242,0.05);
               border: 1px solid rgba(242,242,242,0.10);
+            }
+
+            .sampleNote{
+              margin-top: 8px;
+              font-size: 12px;
+              opacity: 0.75;
+              line-height: 1.6;
+              text-align: center;
             }
 
             .sampleMid{
@@ -248,9 +253,20 @@ export default function HomePage() {
 
             /* ★スマホ時だけ → を ↓ に */
             @media (max-width: 919px){
+              .sampleRow{
+                grid-template-columns: 1fr; /* ←縦並び */
+                gap: 12px;
+              }
+
+              .sampleMid{
+                flex-direction: row;
+                padding: 0;
+              }
+
               .sampleArrow{
                 visibility: hidden;
                 position: relative;
+                height: 18px;
               }
               .sampleArrow::before{
                 content: "↓";
@@ -268,25 +284,12 @@ export default function HomePage() {
               .sampleArrow{ font-size: 28px; }
               .sampleLabel{ font-size: 11px; padding: 6px 10px; }
             }
-            .sampleCap{
-  height: 26px;              /* ←ここで左右の位置が揃う */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  opacity: 0.72;
-  text-align: center;
-  margin-top: 8px;           /* もともとと同じ */
-}
-
           `}</style>
         </section>
 
         <hr className="hr" />
 
         {/* 以下 Featured / How it works / Licensing は変更なし */}
-        {/* （省略せずそのまま使ってください。必要なら続きも全部貼ります） */}
-
       </main>
     </SiteFrame>
   );
