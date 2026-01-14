@@ -181,7 +181,7 @@ export default function HomePage() {
                 >
                   タップで停止／再生（音なし）
                 </div>
-                
+</div>
               </div>
             </div>
 
