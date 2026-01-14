@@ -16,6 +16,10 @@ function getSessionIdFromUrl() {
   return String(sp.get("session_id") ?? "").trim();
 }
 
+function storageKey(sessionId: string) {
+  return `downloaded:${sessionId}`;
+}
+
 export default function SuccessClient({ sessionId }: { sessionId?: string }) {
   const sid = useMemo(
     () => (sessionId?.trim() ? sessionId.trim() : getSessionIdFromUrl()),
@@ -25,8 +29,30 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
   const [items, setItems] = useState<Item[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
 
-  // ✅ 追加：ダウンロード中状態（slugごと）
   const [downloading, setDownloading] = useState<Record<string, boolean>>({});
+  const [downloaded, setDownloaded] = useState<Record<string, boolean>>({});
+
+  // localStorage から復元
+  useEffect(() => {
+    if (!sid) return;
+    try {
+      const raw = localStorage.getItem(storageKey(sid));
+      if (raw) {
+        const obj = JSON.parse(raw);
+        if (obj && typeof obj === "object") {
+          setDownloaded(obj);
+        }
+      }
+    } catch {}
+  }, [sid]);
+
+  // downloaded が変わったら保存
+  useEffect(() => {
+    if (!sid) return;
+    try {
+      localStorage.setItem(storageKey(sid), JSON.stringify(downloaded));
+    } catch {}
+  }, [downloaded, sid]);
 
   useEffect(() => {
     // 成功ページに来たらお気に入りを空に（UX）
@@ -46,7 +72,22 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
         const json = await res.json();
         if (!json.ok) throw new Error(json.error || "failed");
 
-        setItems(json.items || []);
+        const got: Item[] = Array.isArray(json.items) ? json.items : [];
+        setItems(got);
+
+        // 状態初期化（slugが増えたときの安全策）
+        setDownloading((m) => {
+          const next = { ...m };
+          for (const it of got) if (next[it.slug] === undefined) next[it.slug] = false;
+          return next;
+        });
+
+        setDownloaded((m) => {
+          const next = { ...m };
+          for (const it of got) if (next[it.slug] === undefined) next[it.slug] = false;
+          return next;
+        });
+
         setStatus("ok");
       } catch {
         setStatus("err");
@@ -56,15 +97,15 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
     run();
   }, [sid]);
 
-  // ✅ 追加：ページ遷移せずにダウンロード開始
   const startDownload = async (slug: string) => {
     if (!sid) return;
+    if (downloaded[slug]) return;
 
     setDownloading((m) => ({ ...m, [slug]: true }));
+
     try {
       const url = `/api/download?session_id=${encodeURIComponent(sid)}&slug=${encodeURIComponent(slug)}`;
 
-      // 同一ページのままダウンロードを開始
       const a = document.createElement("a");
       a.href = url;
       a.rel = "noopener";
@@ -72,11 +113,13 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
       document.body.appendChild(a);
       a.click();
       a.remove();
+
+      // クリックしたら即「Downloaded」扱い（UX優先）
+      setDownloaded((m) => ({ ...m, [slug]: true }));
     } finally {
-      // 連打防止 + UX
       window.setTimeout(() => {
         setDownloading((m) => ({ ...m, [slug]: false }));
-      }, 800);
+      }, 600);
     }
   };
 
@@ -142,23 +185,41 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
                         />
                       </div>
 
-                      {/* ✅ 変更：Linkで遷移しない。ボタンでダウンロード開始 */}
-                      <button
-                        type="button"
-                        className="btn btnPrimary"
-                        style={{
-                          position: "absolute",
-                          bottom: 10,
-                          left: 10,
-                          borderRadius: 0,
-                          padding: "10px 12px",
-                          opacity: downloading[it.slug] ? 0.7 : 1,
-                          pointerEvents: downloading[it.slug] ? "none" : "auto",
-                        }}
-                        onClick={() => startDownload(it.slug)}
-                      >
-                        {downloading[it.slug] ? "準備中…" : "Download"}
-                      </button>
+                      {!downloaded[it.slug] && (
+                        <button
+                          type="button"
+                          className="btn btnPrimary"
+                          style={{
+                            position: "absolute",
+                            bottom: 10,
+                            left: 10,
+                            borderRadius: 0,
+                            padding: "10px 12px",
+                            opacity: downloading[it.slug] ? 0.7 : 1,
+                            pointerEvents: downloading[it.slug] ? "none" : "auto",
+                          }}
+                          onClick={() => startDownload(it.slug)}
+                        >
+                          {downloading[it.slug] ? "準備中…" : "Download"}
+                        </button>
+                      )}
+
+                      {downloaded[it.slug] && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: 12,
+                            left: 12,
+                            fontSize: 12,
+                            opacity: 0.7,
+                            background: "rgba(0,0,0,0.35)",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            padding: "6px 8px",
+                          }}
+                        >
+                          Downloaded
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
