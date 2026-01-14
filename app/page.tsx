@@ -355,7 +355,7 @@ export default function HomePage() {
                 作品一覧で選ぶ
               </Link>
               <Link className="btn" href="/favorites">
-                保存したフレームを見る
+                ♡お気に入りを見る
               </Link>
             </div>
           </div>
