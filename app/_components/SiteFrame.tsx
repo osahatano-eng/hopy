@@ -101,30 +101,35 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
           <div style={{ color: "rgba(242,242,242,0.5)", fontSize: 12 }}>
             © {new Date().getFullYear()} HOPY CORPORATION
           </div>
-        </div>
-                {/* ===== フルブリード巨大ロゴ ===== */}
-        <div
-          style={{
-            width: "100vw",                // 画面いっぱい
-            marginLeft: "50%",
-            transform: "translateX(-50%)",// container外にフルブリード
-            textAlign: "center",
-            fontSize: "clamp(64px, 16vw, 260px)", // ← 超巨大
-            letterSpacing: "0.12em",
-            lineHeight: 1,
-            fontWeight: 500,
-            color: "#ffffff",              // 真っ白
-            padding: "36px 0 36px",
-            userSelect: "none",
-            pointerEvents: "none",
-          }}
-        >
-          HOPY AI
+          {/* 追加：HOPY AI（containerいっぱい・真っ白・でかい） */}
+          <div className="footerBigBrand" aria-label="HOPY AI">
+            HOPY AI
+          </div>
+
+          <style>{`
+            .footerBigBrand{
+              margin-top: 14px;
+              width: 100%;
+              color: #fff;
+              font-weight: 700;
+              letter-spacing: 0.06em;
+              line-height: 1;
+              /* 画面サイズで自動調整：スマホでもPCでもでかい */
+              font-size: clamp(40px, 7vw, 92px);
+
+              /* container内で幅いっぱいに見せる */
+              display: block;
+
+              /* 左寄せにしたいなら left、中央なら center */
+              text-align: left;
+            }
+          `}</style>
         </div>
       </footer>
     </>
   );
 }
+
 
 
 
