@@ -1,9 +1,12 @@
-﻿export const WORKS_META: Record<
+export const WORKS_META: Record<
   string,
   {
-    title: string;
-    price: number;
+    title?: string;
+    price?: number;
+
+    // ✅ こっちが正：stripePriceId
     stripePriceId?: string;
+
     description?: string;
     size?: string;
     tags?: string[];
@@ -21,4 +24,4 @@
     price: 350,
     stripePriceId: "price_1SovAMPdHZWs1X17DxvgZ1Fg",
   },
-};
+} as const;
