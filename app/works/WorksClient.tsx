@@ -28,7 +28,7 @@ export default function WorksClient() {
   };
 
   const filtered = useMemo(() => {
-    if (mode === "sellable") return WORKS.filter((w) => Boolean(w.stripePriceId));
+    if (mode === "sellable") return WORKS.filter((w) => Boolean((w as any).stripePriceId));
     if (mode === "random") return shuffle(WORKS);
     return WORKS;
   }, [mode]);
@@ -101,15 +101,14 @@ export default function WorksClient() {
         </div>
       </div>
 
-      {/* グリッド */}
+      {/* グリッド（Featuredと同じ見た目） */}
       <div className="fullBleed" style={{ marginTop: 16 }}>
-        <div className="shortsGrid">
-          {shown.map((w) => (
+        <div className="featuredGrid">
+          {shown.map((w: any) => (
             <div key={w.slug} style={{ position: "relative" }}>
-              {/* タイル本体（リンク） */}
               <Link
                 href={`/p/${w.slug}`}
-                className="shortsTile"
+                className="featuredTile"
                 style={{
                   position: "relative",
                   display: "block",
@@ -119,27 +118,30 @@ export default function WorksClient() {
                 }}
                 aria-label={`Open ${w.slug}`}
               >
-                <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
+                <div className="featuredFrame">
                   <img
                     src={w.image}
-                    alt={w.slug}
-                    className="shortsImg"
+                    alt={w.title ?? w.slug}
+                    className="featuredImg"
                     style={{
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
                       display: "block",
-                      borderRadius: 0,
-                      filter: "brightness(1.05)",
                     }}
                   />
                 </div>
 
-                {/* 販売中だけ点 */}
-                
+                <div className="featuredMeta">
+                  <div className="featuredTitle">{w.title ?? w.slug}</div>
+                  <div className="featuredSub">
+                    {w.stripePriceId ? "販売中" : "準備中"} {" · "}¥
+                    {Number(w.price ?? 0).toLocaleString("ja-JP")}
+                  </div>
+                </div>
               </Link>
 
-              {/* ★ 右上：お気に入り（枠なし・ハートだけ） */}
+              {/* 右上：お気に入り（リンクに飛ばさない） */}
               <div
                 style={{
                   position: "absolute",
@@ -147,12 +149,10 @@ export default function WorksClient() {
                   right: 10,
                   zIndex: 3,
                 }}
-                // ここ重要：ハートを押したらリンクに飛ばない
                 onClick={(e) => e.preventDefault()}
                 onMouseDown={(e) => e.preventDefault()}
                 onTouchStart={(e) => e.preventDefault()}
               >
-                {/* FavoriteButton 側で border/background を消すので “ハートだけ” になる */}
                 <FavoriteButton slug={w.slug} compact size={18} />
               </div>
             </div>
@@ -176,13 +176,55 @@ export default function WorksClient() {
         )}
       </div>
 
-      {/* PC hover：文字なしで少し明転 */}
+      {/* Featuredと同じCSS（Works側に内包） */}
       <style>{`
+        .featuredGrid{
+          display:grid;
+          grid-template-columns: repeat(2, minmax(0,1fr));
+          gap: 12px;
+        }
+
+        @media (min-width: 920px){
+          .featuredGrid{
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 14px;
+          }
+        }
+
+        .featuredFrame{
+          width: 100%;
+          aspect-ratio: 4 / 5;
+          overflow: hidden;
+          background: rgba(242,242,242,0.05);
+        }
+
+        .featuredMeta{
+          padding: 10px 10px 12px;
+          background: rgba(0,0,0,0.18);
+          border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .featuredTitle{
+          font-size: 12px;
+          opacity: 0.92;
+          line-height: 1.4;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .featuredSub{
+          margin-top: 6px;
+          font-size: 11px;
+          opacity: 0.7;
+          letter-spacing: 0.02em;
+        }
+
         @media (hover: hover) and (pointer: fine) {
-          .shortsTile:hover .shortsImg { filter: brightness(1.14); }
+          .featuredTile:hover .featuredImg { transform: scale(1.02); }
+          .featuredImg{ transition: transform 260ms ease; }
         }
       `}</style>
     </div>
   );
 }
-
