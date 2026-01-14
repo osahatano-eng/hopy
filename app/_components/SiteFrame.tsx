@@ -112,7 +112,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
             fontSize: "clamp(64px, 16vw, 260px)", // ← 超巨大
             letterSpacing: "0.12em",
             lineHeight: 1,
-            fontWeight: 300,
+            fontWeight: 500,
             color: "#ffffff",              // 真っ白
             padding: "28px 0 36px",
             userSelect: "none",
@@ -125,6 +125,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     </>
   );
 }
+
 
 
 
