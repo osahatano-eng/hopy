@@ -141,18 +141,10 @@ export default function HomePage() {
                 <div className="sampleLabel">SAMPLE</div>
               </div>
 
-              <div className="sampleCol">
-                <div
-                  style={{
-                    marginBottom: 8,
-                    fontSize: 12,
-                    opacity: 0.75,
-                    lineHeight: 1.6,
-                    textAlign: "center",
-                  }}
-                >
-                  タップで停止／再生（音なし）
+              <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
+                  Motion（1枚を起点に動かした例）
                 </div>
+              
 
                 <div className="sampleFrame">
                   <video
@@ -177,10 +169,19 @@ export default function HomePage() {
                     }}
                   />
                 </div>
-
-                <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
-                  Motion（1枚を起点に動かした例）
+<div className="sampleCol">
+                <div
+                  style={{
+                    marginBottom: 8,
+                    fontSize: 12,
+                    opacity: 0.75,
+                    lineHeight: 1.6,
+                    textAlign: "center",
+                  }}
+                >
+                  タップで停止／再生（音なし）
                 </div>
+                
               </div>
             </div>
 
