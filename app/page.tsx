@@ -119,6 +119,9 @@ export default function HomePage() {
 
             <div style={{ marginTop: 14 }} className="sampleRow">
               <div className="sampleCol">
+                <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
+                  Still（購入ページで見る1枚）
+                </div>
                 <div className="sampleFrame">
                   <img
                     src="/samples/quiet-fire.png"
@@ -130,9 +133,6 @@ export default function HomePage() {
                       display: "block",
                     }}
                   />
-                </div>
-                <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
-                  Still（購入ページで見る1枚）
                 </div>
               </div>
 
