@@ -102,8 +102,27 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
             © {new Date().getFullYear()} HOPY CORPORATION
           </div>
         </div>
+                {/* ===== ここが大文字レスポンシブの HOPY AI ===== */}
+        <div
+          style={{
+            marginTop: 18,
+            width: "100%",
+            textAlign: "center",
+            fontSize: "clamp(32px, 8vw, 120px)", // スマホ〜PCで可変
+            letterSpacing: "0.18em",
+            lineHeight: 1,
+            fontWeight: 300,
+            opacity: 0.08,
+            padding: "20px 0 28px",
+            userSelect: "none",
+            pointerEvents: "none",
+          }}
+        >
+          HOPY AI
+        </div>
       </footer>
     </>
   );
 }
+
 
