@@ -23,7 +23,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     <>
       <header className="nav">
         <div className="container navInner">
-          <Link className="brand" href="/">ホピー株式会社</Link>
+          <Link className="brand" href="/">HOPY AI</Link>
 
           <nav className="navLinks" style={{ alignItems: "center" }}>
             <Link className="navLink" href="/works">Works</Link>
@@ -106,3 +106,4 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     </>
   );
 }
+
