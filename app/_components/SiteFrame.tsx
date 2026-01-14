@@ -102,18 +102,19 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
             © {new Date().getFullYear()} HOPY CORPORATION
           </div>
         </div>
-                {/* ===== ここが大文字レスポンシブの HOPY AI ===== */}
+                {/* ===== フルブリード巨大ロゴ ===== */}
         <div
           style={{
-            marginTop: 18,
-            width: "100%",
+            width: "100vw",                // 画面いっぱい
+            marginLeft: "50%",
+            transform: "translateX(-50%)",// container外にフルブリード
             textAlign: "center",
-            fontSize: "clamp(32px, 8vw, 120px)", // スマホ〜PCで可変
-            letterSpacing: "0.18em",
+            fontSize: "clamp(64px, 16vw, 260px)", // ← 超巨大
+            letterSpacing: "0.12em",
             lineHeight: 1,
             fontWeight: 300,
-            opacity: 0.08,
-            padding: "20px 0 28px",
+            color: "#ffffff",              // 真っ白
+            padding: "28px 0 36px",
             userSelect: "none",
             pointerEvents: "none",
           }}
@@ -124,5 +125,6 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     </>
   );
 }
+
 
 
