@@ -13,7 +13,7 @@ function yen(n: number) {
 function detectFavoriteSlugs(): string[] {
   try {
     const allSlugs = new Set(WORKS.map((w) => w.slug));
-    const candidates: { key: string; slugs: string[] }[] = [];
+    const candidates: string[][] = [];
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -26,28 +26,24 @@ function detectFavoriteSlugs(): string[] {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.every((x) => typeof x === "string")) {
           const filtered = parsed.filter((s) => allSlugs.has(s));
-          if (filtered.length > 0 && filtered.length === parsed.length) {
-            candidates.push({ key, slugs: filtered });
-          }
+          if (filtered.length > 0 && filtered.length === parsed.length) candidates.push(filtered);
         }
       } catch {
         // ignore
       }
     }
 
-    // いちばん長い配列を採用
-    candidates.sort((a, b) => b.slugs.length - a.slugs.length);
-    return candidates[0]?.slugs ?? [];
+    candidates.sort((a, b) => b.length - a.length);
+    return candidates[0] ?? [];
   } catch {
     return [];
   }
 }
 
-// Favoritesの保存先キーを推定（detectと同じロジックで「採用されたキー」を返す）
-function detectFavoriteStorageKey(): string | null {
+// ✅ 「このslugを持っている」localStorageキーを特定する（0件になっても確実に更新できる）
+function findFavoritesStorageKeyBySlug(targetSlug: string): string | null {
   try {
     const allSlugs = new Set(WORKS.map((w) => w.slug));
-    const candidates: { key: string; len: number }[] = [];
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -59,9 +55,10 @@ function detectFavoriteStorageKey(): string | null {
       try {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.every((x) => typeof x === "string")) {
+          // WORKSのslugだけで構成されている配列で、かつ targetSlug を含む
           const filtered = parsed.filter((s) => allSlugs.has(s));
-          if (filtered.length > 0 && filtered.length === parsed.length) {
-            candidates.push({ key, len: filtered.length });
+          if (filtered.length === parsed.length && parsed.includes(targetSlug)) {
+            return key;
           }
         }
       } catch {
@@ -69,8 +66,7 @@ function detectFavoriteStorageKey(): string | null {
       }
     }
 
-    candidates.sort((a, b) => b.len - a.len);
-    return candidates[0]?.key ?? null;
+    return null;
   } catch {
     return null;
   }
@@ -92,13 +88,19 @@ export default function FavoritesClient() {
     window.addEventListener("focus", refresh);
     document.addEventListener("visibilitychange", onVis);
 
+    // 他タブからの変更
     const onStorage = () => refresh();
     window.addEventListener("storage", onStorage);
+
+    // 同一タブの Favorites 更新（FavoritesCount が見ているイベント）
+    const onFavChanged = () => refresh();
+    window.addEventListener(FAVORITES_EVENT, onFavChanged);
 
     return () => {
       window.removeEventListener("focus", refresh);
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("storage", onStorage);
+      window.removeEventListener(FAVORITES_EVENT, onFavChanged);
     };
   }, []);
 
@@ -155,28 +157,28 @@ export default function FavoritesClient() {
     }
   }
 
-  // ✅ ここが本命：Favoritesページ内で「解除」を即時反映（画像消える＆合計も即更新）
+  // ✅ ここが本命：解除した瞬間に「画像も合計もヘッダー数字も」全部リアルタイム更新
   function removeFromFavorites(slug: string) {
-    // 1) 画面を即更新（これで画像/件数/合計がリアルタイムに変わる）
+    // 1) 画面を即更新
     setSlugs((prev) => prev.filter((s) => s !== slug));
 
-    // 2) localStorageも確実に更新（次回リロードでも残らない）
+    // 2) localStorage を確実に更新（「slugを含むキー」を探して更新する）
     try {
-      const key = detectFavoriteStorageKey();
-      if (!key) return;
-
-      const raw = localStorage.getItem(key);
-      const arr = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(arr)) {
-        const next = arr.filter((s) => s !== slug);
-        localStorage.setItem(key, JSON.stringify(next));
+      const key = findFavoritesStorageKeyBySlug(slug);
+      if (key) {
+        const raw = localStorage.getItem(key);
+        const arr = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(arr)) {
+          const next = arr.filter((s) => s !== slug);
+          localStorage.setItem(key, JSON.stringify(next));
+        }
       }
-
-      // 同一タブ内の他コンポーネントがstorageイベントを待ってる場合の保険
-      window.dispatchEvent(new Event("FAVORITES_EVENT"));
     } catch {
       // ignore
     }
+
+    // 3) ヘッダーの数字（FavoritesCount）へ即通知
+    window.dispatchEvent(new Event(FAVORITES_EVENT));
   }
 
   return (
@@ -200,7 +202,12 @@ export default function FavoritesClient() {
             作品を追加して探す
           </Link>
 
-          <button className="btn" type="button" onClick={() => setSlugs(detectFavoriteSlugs())} style={{ borderRadius: 0 }}>
+          <button
+            className="btn"
+            type="button"
+            onClick={() => setSlugs(detectFavoriteSlugs())}
+            style={{ borderRadius: 0 }}
+          >
             更新
           </button>
 
@@ -239,7 +246,7 @@ export default function FavoritesClient() {
                 </div>
               </Link>
 
-              {/* ✅ Favorites内専用：クリックで即解除（表示も合計も即変わる） */}
+              {/* ✅ 塗りハート（♥）を押したら解除 → 即消える */}
               <button
                 type="button"
                 aria-label="お気に入り解除"
@@ -258,10 +265,12 @@ export default function FavoritesClient() {
                   borderRadius: 0,
                   border: "1px solid rgba(255,255,255,0.22)",
                   background: "rgba(0,0,0,0.35)",
-                  color: "white",
+                  color: "#ff4d6d",
                   display: "grid",
                   placeItems: "center",
                   cursor: "pointer",
+                  lineHeight: 1,
+                  fontSize: 18,
                 }}
                 title="お気に入り解除"
               >
@@ -274,6 +283,3 @@ export default function FavoritesClient() {
     </div>
   );
 }
-
-
-
