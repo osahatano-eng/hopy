@@ -16,12 +16,13 @@ export const WORKS_META: Record<
   y8durmct: {
     title: "y8durmct",
     price: 350,
-    stripePriceId: "price_1Sov8RPdHZWs1X17dIDyEZPm",
+    stripePriceId: "price_1SoqF5PdHZWs1X17cvujvG32",
   },
 
   g4tywz0w: {
     title: "g4tywz0w",
     price: 350,
-    stripePriceId: "price_1SovAMPdHZWs1X17DxvgZ1Fg",
+    stripePriceId: "price_1SpcChPdHZWs1X17tkGdGAU5",
   },
 } as const;
+
