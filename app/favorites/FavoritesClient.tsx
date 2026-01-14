@@ -5,24 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { WORKS } from "@/lib/works";
 import FavoriteButton from "@/app/_components/FavoriteButton";
 
-// ★あなたのFavoriteButtonが使ってるキーが違う場合はここだけ合わせる
 const FAVORITES_KEY = "favorites";
 
-// WORKS要素型
 type Work = (typeof WORKS)[number];
-
-// stripePriceId / priceYen を「存在するなら読む」ための安全アクセサ
-function getStripePriceId(w: unknown): string | null {
-  if (!w || typeof w !== "object") return null;
-  const v = (w as { stripePriceId?: unknown }).stripePriceId;
-  return typeof v === "string" && v.length > 0 ? v : null;
-}
-function getPriceYen(w: unknown): number {
-  if (!w || typeof w !== "object") return 0;
-  const v = (w as { priceYen?: unknown }).priceYen;
-  const n = typeof v === "number" ? v : Number(v);
-  return Number.isFinite(n) ? n : 0;
-}
 
 function readFavorites(): string[] {
   try {
@@ -35,6 +20,12 @@ function readFavorites(): string[] {
   }
 }
 
+function getStripePriceId(w: unknown): string | null {
+  if (!w || typeof w !== "object") return null;
+  const v = (w as { stripePriceId?: unknown }).stripePriceId;
+  return typeof v === "string" && v.length > 0 ? v : null;
+}
+
 export default function FavoritesClient() {
   const [slugs, setSlugs] = useState<string[]>([]);
 
@@ -42,32 +33,19 @@ export default function FavoritesClient() {
     setSlugs(readFavorites());
   }, []);
 
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === FAVORITES_KEY) setSlugs(readFavorites());
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
   const favoriteWorks: Work[] = useMemo(() => {
     const set = new Set(slugs);
     return WORKS.filter((w) => set.has(w.slug));
   }, [slugs]);
 
-  const sellableWorks = useMemo(() => {
-    return favoriteWorks.filter((w) => Boolean(getStripePriceId(w)));
+  const sellableSlugs = useMemo(() => {
+    return favoriteWorks.filter((w) => Boolean(getStripePriceId(w))).map((w) => w.slug);
   }, [favoriteWorks]);
 
-  const sellableSlugs = useMemo(() => sellableWorks.map((w) => w.slug), [sellableWorks]);
-
-  const totalYen = useMemo(() => {
-    return sellableWorks.reduce((sum, w) => sum + getPriceYen(w), 0);
-  }, [sellableWorks]);
-
   async function buyAll() {
+    // ここで空なら、まず favorites に “販売可能作品” が入ってない
     if (sellableSlugs.length === 0) {
-      window.alert("購入可能な作品がありません。");
+      alert("購入可能な作品がありません（販売中の作品をお気に入りに入れてください）。");
       return;
     }
 
@@ -80,7 +58,7 @@ export default function FavoritesClient() {
     const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
 
     if (!res.ok || !data.url) {
-      window.alert(data.error ?? "購入処理に失敗しました");
+      alert(data.error ?? "購入処理に失敗しました");
       return;
     }
 
@@ -104,15 +82,10 @@ export default function FavoritesClient() {
       >
         <div style={{ fontSize: 12, opacity: 0.8, letterSpacing: "0.12em" }}>NEXT STEP</div>
         <div style={{ fontSize: 18, fontWeight: 600, marginTop: 6 }}>保存した中から、買う。</div>
-        <div style={{ fontSize: 12, opacity: 0.7, marginTop: 8, lineHeight: 1.7 }}>
-          ここは買う候補の“棚”です。
-          <br />
-          迷ったら、いったん全部買う。後悔しない。
-        </div>
 
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 14, alignItems: "center" }}>
           <button className="btn btnPrimary" type="button" onClick={buyAll} style={{ borderRadius: 0 }}>
-            全部購入（¥{totalYen.toLocaleString("ja-JP")}）
+            全部購入
           </button>
 
           <Link className="btn" href="/works" style={{ borderRadius: 0 }}>
@@ -120,7 +93,7 @@ export default function FavoritesClient() {
           </Link>
 
           <div style={{ fontSize: 12, opacity: 0.7 }}>
-            {sellableWorks.length}件 / 合計 ¥{totalYen.toLocaleString("ja-JP")}
+            {sellableSlugs.length}件（購入可能）
           </div>
         </div>
       </div>
@@ -139,11 +112,10 @@ export default function FavoritesClient() {
                   borderRadius: 0,
                   border: "1px solid rgba(255,255,255,0.10)",
                 }}
-                aria-label={`Open ${w.slug}`}
               >
                 <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
                   <img
-                    src={(w as { image: string }).image}
+                    src={w.image}
                     alt={w.slug}
                     className="shortsImg"
                     style={{
@@ -152,7 +124,6 @@ export default function FavoritesClient() {
                       objectFit: "cover",
                       display: "block",
                       borderRadius: 0,
-                      filter: "brightness(1.05)",
                     }}
                   />
                 </div>
@@ -170,12 +141,6 @@ export default function FavoritesClient() {
           ))}
         </div>
       </div>
-
-      <style>{`
-        @media (hover: hover) and (pointer: fine) {
-          .shortsTile:hover .shortsImg { filter: brightness(1.14); }
-        }
-      `}</style>
     </div>
   );
 }
