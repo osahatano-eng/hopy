@@ -11,6 +11,14 @@ function baseUrl() {
   );
 }
 
+function normalizeSlugCsv(csv: unknown): string[] {
+  const s = typeof csv === "string" ? csv : "";
+  return s
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const sessionId = String(searchParams.get("session_id") ?? "").trim();
@@ -24,7 +32,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: false, error: "missing_STRIPE_SECRET_KEY" }, { status: 500 });
   }
 
-  // ✅ ビルド時に落ちない
   const stripe = new Stripe(key);
 
   try {
@@ -36,26 +43,43 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: "not_paid" }, { status: 402 });
     }
 
-    const lineItems = (session as any).line_items?.data ?? [];
-    const priceIds: string[] = lineItems
-      .map((li: any) => li?.price?.id)
-      .filter((x: any) => typeof x === "string");
+    // ✅ 1) 最優先：metadata.slugs から復元（checkout-bundleで入れてるので最も確実）
+    const metaSlugs = normalizeSlugCsv((session as any)?.metadata?.slugs);
+    let boughtWorks: (typeof WORKS)[number][] = [];
 
-    const bought = WORKS.filter((w) => w.stripePriceId && priceIds.includes(w.stripePriceId));
+    if (metaSlugs.length > 0) {
+      // metadata順でWORKSを引く（順番を維持）
+      boughtWorks = metaSlugs
+        .map((slug) => WORKS.find((w) => w.slug === slug))
+        .filter(Boolean) as (typeof WORKS)[number][];
+    } else {
+      // ✅ 2) フォールバック：line_items の priceId から復元（保険）
+      const lineItems = (session as any).line_items?.data ?? [];
+      const priceIds: string[] = lineItems
+        .map((li: any) => li?.price?.id ?? li?.price) // priceが文字列のケースも拾う
+        .filter((x: any) => typeof x === "string");
+
+      boughtWorks = WORKS.filter(
+        (w) => typeof w.stripePriceId === "string" && priceIds.includes(w.stripePriceId)
+      );
+    }
 
     return NextResponse.json({
       ok: true,
       session_id: sessionId,
-      count: bought.length,
-      items: bought.map((w) => ({
+      count: boughtWorks.length,
+      items: boughtWorks.map((w) => ({
         slug: w.slug,
-        image: w.image,
+        image: (w as any).image,
         title: (w as any).title ?? w.slug,
-        // SuccessClientは /download/[slug]?session_id=... に誘導するので、ここでは不要でもOK
-        download: `${baseUrl()}/api/download?session_id=${encodeURIComponent(sessionId)}&slug=${encodeURIComponent(w.slug)}`,
+        // （今はSuccessClientは /download/[slug]?session_id=... に誘導してるので必須ではない）
+        download: `${baseUrl()}/api/download?session_id=${encodeURIComponent(sessionId)}&slug=${encodeURIComponent(
+          w.slug
+        )}`,
       })),
     });
-  } catch {
+  } catch (e) {
+    console.error(e);
     return NextResponse.json({ ok: false, error: "invalid_session" }, { status: 400 });
   }
 }
