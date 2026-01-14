@@ -27,7 +27,8 @@ export default async function SuccessPage({ searchParams }: Props) {
             </h1>
 
             <p className="sub" style={{ marginTop: 12 }}>
-              決済が完了しました。下からダウンロードできます。
+              決済が完了しました。下からダウンロードできます。<br />
+              1080x1920ピクセル /　クレジットなし
             </p>
 
             {/* ★ここが重要：session_id を渡す */}
@@ -46,3 +47,4 @@ export default async function SuccessPage({ searchParams }: Props) {
     </SiteFrame>
   );
 }
+
