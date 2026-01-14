@@ -264,7 +264,7 @@ export default function FavoritesClient() {
                 }}
                 title="お気に入り解除"
               >
-                ♡
+                ♥
               </button>
             </div>
           ))}
@@ -273,3 +273,4 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
