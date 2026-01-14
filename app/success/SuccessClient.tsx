@@ -228,6 +228,7 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
           </>
         )}
 
+        {/*
         <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
           <Link className="btn btnPrimary" href="/works" style={{ borderRadius: 0 }}>
             作品を見る
@@ -236,8 +237,10 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
             お気に入りへ
           </Link>
         </div>
+        */}
       </div>
     </div>
   );
 }
+
 
