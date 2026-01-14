@@ -130,17 +130,13 @@ export default async function ProductPage({ params }: Props) {
                     {/* CTA + お気に入り */}
                     <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                       {w.stripePriceId ? (
-                        <form action="/api/checkout" method="POST">
-                          <input type="hidden" name="slug" value={w.slug} />
-                          <button className="btn btnPrimary" type="submit">
-                            この1枚から始める
-                          </button>
-                        </form>
-                      ) : (
-                        <div className="btn" style={{ opacity: 0.6, pointerEvents: "none" }}>
-                          準備中
-                        </div>
-                      )}
+  <BuyNowClient slug={w.slug} />
+) : (
+  <div className="btn" style={{ opacity: 0.6, pointerEvents: "none" }}>
+    準備中
+  </div>
+)}
+
 
                       <FavoriteButton slug={w.slug} label />
                     </div>
@@ -228,5 +224,6 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
