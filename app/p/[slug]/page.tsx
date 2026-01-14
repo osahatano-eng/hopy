@@ -4,6 +4,8 @@ import { WORKS } from "@/lib/works";
 import SiteFrame from "@/app/_components/SiteFrame";
 import VideoPreview916 from "@/app/_components/VideoPreview916";
 import FavoriteButton from "@/app/_components/FavoriteButton";
+import BuyNowClient from "@/app/_components/BuyNowClient";
+
 
 type Params = { slug: string };
 type Props = { params: Params | Promise<Params> };
@@ -226,4 +228,5 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
