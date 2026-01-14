@@ -136,21 +136,7 @@ export default function WorksClient() {
                 </div>
 
                 {/* 販売中だけ点 */}
-                {w.stripePriceId ? (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 10,
-                      left: 10,
-                      width: 8,
-                      height: 8,
-                      borderRadius: 999,
-                      background: "rgba(242,242,242,0.85)",
-                      boxShadow: "0 0 0 2px rgba(11,12,15,0.55)",
-                    }}
-                    aria-hidden="true"
-                  />
-                ) : null}
+                
               </Link>
 
               {/* ★ 右上：お気に入り（枠なし・ハートだけ） */}
@@ -199,3 +185,4 @@ export default function WorksClient() {
     </div>
   );
 }
+
