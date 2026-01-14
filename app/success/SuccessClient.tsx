@@ -114,9 +114,6 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
 
                       <Link
   href={`/download/${it.slug}?session_id=${encodeURIComponent(sid)}`}
-  target="_blank"
-  rel="noopener noreferrer"
-  prefetch={false}
   className="btn btnPrimary"
   style={{ position: "absolute", bottom: 10, left: 10, borderRadius: 0, padding: "10px 12px" }}
 >
@@ -143,4 +140,5 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
     </div>
   );
 }
+
 
