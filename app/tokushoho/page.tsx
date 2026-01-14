@@ -14,7 +14,7 @@ export default function TokushohoPage() {
           <div><b>連絡先</b>：hatano@hopy.co.jp</div>
           <div><b>販売価格</b>：各商品ページに表示（消費税込）</div>
           <div><b>商品代金以外の必要料金</b>：通信料等はお客様負担</div>
-          <div><b>お支払い方法</b>：クレジットカード（Stripe）</div>
+          <div><b>お支払い方法</b>：Link/Apple Pay/Google Pay/PayPay（Stripe）</div>
           <div><b>お支払い時期</b>：購入時に即時決済</div>
           <div><b>引き渡し時期</b>：決済完了後、ダウンロードにより即時</div>
           <div><b>返品・キャンセル</b>：デジタル商品の性質上、原則不可</div>
@@ -28,4 +28,5 @@ export default function TokushohoPage() {
     </SiteFrame>
   );
 }
+
 
