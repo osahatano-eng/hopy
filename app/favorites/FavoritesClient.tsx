@@ -1,31 +1,73 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { WORKS } from "@/lib/works";
 
 function yen(n: number) {
   return new Intl.NumberFormat("ja-JP").format(n);
 }
 
-function readFavoriteSlugs(): string[] {
-  // FavoriteButton が使っているキーに合わせる（あなたの実装が違う場合はここだけ変える）
-  const keys = ["favorites", "favoriteSlugs", "hopy:favorites"];
-  for (const k of keys) {
-    try {
-      const raw = localStorage.getItem(k);
+// localStorage内から「お気に入りslug配列っぽいもの」を自動検出する
+function detectFavoriteSlugs(): string[] {
+  try {
+    const allSlugs = new Set(WORKS.map((w) => w.slug));
+    const candidates: string[][] = [];
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+
+      const raw = localStorage.getItem(key);
       if (!raw) continue;
-      const arr = JSON.parse(raw);
-      if (Array.isArray(arr)) return arr.filter((x) => typeof x === "string");
-    } catch {}
+
+      // JSON配列を試す
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.every((x) => typeof x === "string")) {
+          // WORKSのslugだけで構成されている配列を候補にする
+          const filtered = parsed.filter((s) => allSlugs.has(s));
+          if (filtered.length > 0 && filtered.length === parsed.length) candidates.push(filtered);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // いちばん長い配列を採用（お気に入りが増えても追従）
+    candidates.sort((a, b) => b.length - a.length);
+    return candidates[0] ?? [];
+  } catch {
+    return [];
   }
-  return [];
 }
 
 export default function FavoritesClient() {
-  const [slugs, setSlugs] = useState<string[]>(() => (typeof window === "undefined" ? [] : readFavoriteSlugs()));
+  const [slugs, setSlugs] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+
+  // 初回＆タブ復帰で必ず読み直す
+  useEffect(() => {
+    const refresh = () => setSlugs(detectFavoriteSlugs());
+    refresh();
+
+    const onVis = () => {
+      if (document.visibilityState === "visible") refresh();
+    };
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", onVis);
+
+    // storageイベント（別タブ操作にも追従）
+    const onStorage = () => refresh();
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   const items = useMemo(() => slugs.map((s) => WORKS.find((w) => w.slug === s)).filter(Boolean), [slugs]);
 
@@ -45,7 +87,7 @@ export default function FavoritesClient() {
 
     const sellableSlugs = sellable.map((w: any) => w.slug);
     if (sellableSlugs.length === 0) {
-      setMsg("販売中の作品がありません（stripePriceId がWORKSに載っていない可能性）");
+      setMsg("販売中の作品がありません（お気に入りが空 or stripePriceIdがWORKSに載っていません）");
       return;
     }
 
@@ -94,12 +136,7 @@ export default function FavoritesClient() {
             作品を追加して探す
           </Link>
 
-          <button
-            className="btn"
-            type="button"
-            onClick={() => setSlugs(readFavoriteSlugs())}
-            style={{ borderRadius: 0, opacity: 0.85 }}
-          >
+          <button className="btn" type="button" onClick={() => setSlugs(detectFavoriteSlugs())} style={{ borderRadius: 0 }}>
             更新
           </button>
 
@@ -129,12 +166,7 @@ export default function FavoritesClient() {
               }}
             >
               <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
-                <img
-                  src={w.image}
-                  alt={w.slug}
-                  className="shortsImg"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                />
+                <img src={w.image} alt={w.slug} className="shortsImg" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               </div>
             </Link>
           ))}
