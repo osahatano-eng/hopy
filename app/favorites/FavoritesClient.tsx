@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { WORKS } from "@/lib/works";
+import FavoriteButton from "@/app/_components/FavoriteButton";
 
 function yen(n: number) {
   return new Intl.NumberFormat("ja-JP").format(n);
@@ -69,7 +70,10 @@ export default function FavoritesClient() {
     };
   }, []);
 
-  const items = useMemo(() => slugs.map((s) => WORKS.find((w) => w.slug === s)).filter(Boolean), [slugs]);
+  const items = useMemo(
+    () => slugs.map((s) => WORKS.find((w) => w.slug === s)).filter(Boolean),
+    [slugs]
+  );
 
   const sellable = useMemo(
     () => items.filter((w: any) => typeof w.stripePriceId === "string" && w.stripePriceId.length > 0),
@@ -80,6 +84,9 @@ export default function FavoritesClient() {
     () => sellable.reduce((sum: number, w: any) => sum + (typeof w.price === "number" ? w.price : 0), 0),
     [sellable]
   );
+
+  // ✅ ハートOFFしたら即反映（localStorage更新の直後にslugsを再取得）
+  const refresh = () => setSlugs(detectFavoriteSlugs());
 
   async function checkoutAll() {
     setMsg("");
@@ -102,21 +109,16 @@ export default function FavoritesClient() {
       const data: any = await res.json().catch(() => ({}));
 
       if (!res.ok || !data?.ok || !data?.url) {
-        // ✅ APIが返す message を最優先で表示（審査中ガード等）
         const apiMsg =
           typeof data?.message === "string" && data.message.trim().length > 0
             ? data.message
             : null;
 
-        if (apiMsg) {
-          setMsg(apiMsg);
-        } else {
-          setMsg(`購入開始に失敗: ${data?.error ?? "unknown_error"}（status ${res.status}）`);
-        }
+        if (apiMsg) setMsg(apiMsg);
+        else setMsg(`購入開始に失敗: ${data?.error ?? "unknown_error"}（status ${res.status}）`);
         return;
       }
 
-      // ✅ Stripeへ確実に遷移
       window.location.assign(data.url);
     } catch (e: any) {
       setMsg(`通信エラー: ${e?.message ?? String(e)}`);
@@ -146,12 +148,7 @@ export default function FavoritesClient() {
             作品を追加して探す
           </Link>
 
-          <button
-            className="btn"
-            type="button"
-            onClick={() => setSlugs(detectFavoriteSlugs())}
-            style={{ borderRadius: 0 }}
-          >
+          <button className="btn" type="button" onClick={refresh} style={{ borderRadius: 0 }}>
             更新
           </button>
 
@@ -168,27 +165,45 @@ export default function FavoritesClient() {
       <div className="fullBleed" style={{ marginTop: 16 }}>
         <div className="shortsGrid">
           {items.map((w: any) => (
-            <Link
-              key={w.slug}
-              href={`/p/${w.slug}`}
-              className="shortsTile"
-              style={{
-                position: "relative",
-                display: "block",
-                overflow: "hidden",
-                borderRadius: 0,
-                border: "1px solid rgba(255,255,255,0.10)",
-              }}
-            >
-              <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
-                <img
-                  src={w.image}
-                  alt={w.slug}
-                  className="shortsImg"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                />
+            <div key={w.slug} style={{ position: "relative" }}>
+              {/* タイル（詳細へ） */}
+              <Link
+                href={`/p/${w.slug}`}
+                className="shortsTile"
+                style={{
+                  position: "relative",
+                  display: "block",
+                  overflow: "hidden",
+                  borderRadius: 0,
+                  border: "1px solid rgba(255,255,255,0.10)",
+                }}
+              >
+                <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
+                  <img
+                    src={w.image}
+                    alt={w.slug}
+                    className="shortsImg"
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  />
+                </div>
+              </Link>
+
+              {/* ✅ Favoritesページにもハート表示（OFFでこのページから消える） */}
+              <div
+                style={{ position: "absolute", top: 10, right: 10, zIndex: 10 }}
+                onClick={(e) => {
+                  // Linkのクリックを防ぐ
+                  e.preventDefault();
+                  e.stopPropagation();
+
+                  // FavoriteButtonがlocalStorageを更新した直後に再取得
+                  // 1tick遅らせると確実
+                  setTimeout(() => refresh(), 0);
+                }}
+              >
+                <FavoriteButton slug={w.slug} />
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>
