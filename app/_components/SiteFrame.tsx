@@ -108,20 +108,20 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
 
           <style>{`
             .footerBigBrand{
-              margin-top: 14px;
+              margin-top: 50px;
               width: 100%;
               color: #fff;
               font-weight: 700;
               letter-spacing: 0.06em;
               line-height: 1;
               /* 画面サイズで自動調整：スマホでもPCでもでかい */
-              font-size: clamp(40px, 7vw, 92px);
+              font-size: clamp(64px, 7vw, 92px);
 
               /* container内で幅いっぱいに見せる */
               display: block;
 
               /* 左寄せにしたいなら left、中央なら center */
-              text-align: left;
+              text-align: center;
             }
           `}</style>
         </div>
@@ -129,6 +129,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     </>
   );
 }
+
 
 
 
