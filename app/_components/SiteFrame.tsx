@@ -115,7 +115,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
               letter-spacing: 0.06em;
               line-height: 1;
               /* 画面サイズで自動調整：スマホでもPCでもでかい */
-              font-size: clamp(64px, 7vw, 92px);
+              font-size: clamp(64px, 16vw, 260px);
 
               /* container内で幅いっぱいに見せる */
               display: block;
@@ -129,6 +129,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     </>
   );
 }
+
 
 
 
