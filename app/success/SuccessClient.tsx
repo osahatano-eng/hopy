@@ -155,7 +155,7 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
               {items.length}件のダウンロード
             </div>
 
-            <div className="fullBleed" style={{ marginTop: 14 }}>
+            <div style={{ marginTop: 14 }}>
               <div className="shortsGrid">
                 {items.map((it) => (
                   <div key={it.slug} style={{ position: "relative" }}>
@@ -240,3 +240,4 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
     </div>
   );
 }
+
