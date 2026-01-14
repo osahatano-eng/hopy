@@ -1,143 +1,142 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { WORKS } from "@/lib/works";
-import FavoriteButton from "@/app/_components/FavoriteButton";
 
-const FAVORITES_KEY = "favorites";
-
-type Work = (typeof WORKS)[number];
-
-function readFavorites(): string[] {
-  try {
-    const raw = localStorage.getItem(FAVORITES_KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : [];
-  } catch {
-    return [];
-  }
+function yen(n: number) {
+  return new Intl.NumberFormat("ja-JP").format(n);
 }
 
-function getStripePriceId(w: unknown): string | null {
-  if (!w || typeof w !== "object") return null;
-  const v = (w as { stripePriceId?: unknown }).stripePriceId;
-  return typeof v === "string" && v.length > 0 ? v : null;
+function readFavoriteSlugs(): string[] {
+  // FavoriteButton が使っているキーに合わせる（あなたの実装が違う場合はここだけ変える）
+  const keys = ["favorites", "favoriteSlugs", "hopy:favorites"];
+  for (const k of keys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (!raw) continue;
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return arr.filter((x) => typeof x === "string");
+    } catch {}
+  }
+  return [];
 }
 
 export default function FavoritesClient() {
-  const [slugs, setSlugs] = useState<string[]>([]);
+  const [slugs, setSlugs] = useState<string[]>(() => (typeof window === "undefined" ? [] : readFavoriteSlugs()));
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
 
-  useEffect(() => {
-    setSlugs(readFavorites());
-  }, []);
+  const items = useMemo(() => slugs.map((s) => WORKS.find((w) => w.slug === s)).filter(Boolean), [slugs]);
 
-  const favoriteWorks: Work[] = useMemo(() => {
-    const set = new Set(slugs);
-    return WORKS.filter((w) => set.has(w.slug));
-  }, [slugs]);
+  const sellable = useMemo(
+    () => items.filter((w: any) => typeof w.stripePriceId === "string" && w.stripePriceId.length > 0),
+    [items]
+  );
 
-  const sellableSlugs = useMemo(() => {
-    return favoriteWorks.filter((w) => Boolean(getStripePriceId(w))).map((w) => w.slug);
-  }, [favoriteWorks]);
+  const totalYen = useMemo(
+    () => sellable.reduce((sum: number, w: any) => sum + (typeof w.price === "number" ? w.price : 0), 0),
+    [sellable]
+  );
 
-  async function buyAll() {
-    // ここで空なら、まず favorites に “販売可能作品” が入ってない
+  async function checkoutAll() {
+    setMsg("");
+    if (busy) return;
+
+    const sellableSlugs = sellable.map((w: any) => w.slug);
     if (sellableSlugs.length === 0) {
-      alert("購入可能な作品がありません（販売中の作品をお気に入りに入れてください）。");
+      setMsg("販売中の作品がありません（stripePriceId がWORKSに載っていない可能性）");
       return;
     }
 
-    const res = await fetch("/api/checkout-bundle", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slugs: sellableSlugs }),
-    });
+    setBusy(true);
+    try {
+      const res = await fetch("/api/checkout-bundle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slugs: sellableSlugs }),
+      });
 
-    const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+      const data = await res.json().catch(() => ({}));
 
-    if (!res.ok || !data.url) {
-      alert(data.error ?? "購入処理に失敗しました");
-      return;
+      if (!res.ok || !data?.ok || !data?.url) {
+        setMsg(`購入開始に失敗: ${data?.error ?? "unknown_error"}（status ${res.status}）`);
+        return;
+      }
+
+      // ✅ Stripeへ確実に遷移
+      window.location.assign(data.url);
+    } catch (e: any) {
+      setMsg(`通信エラー: ${e?.message ?? String(e)}`);
+    } finally {
+      setBusy(false);
     }
-
-    window.location.href = data.url;
   }
 
   return (
     <div style={{ marginTop: 18 }}>
-      <div style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.6 }}>
-        <div style={{ letterSpacing: "0.12em" }}>FAVORITES</div>
-        <div style={{ fontSize: 28, fontWeight: 600, marginTop: 6 }}>保存したフレーム</div>
-      </div>
+      <div style={{ border: "1px solid rgba(255,255,255,0.12)", padding: 18 }}>
+        <div style={{ fontSize: 12, opacity: 0.7, letterSpacing: 1 }}>FAVORITES</div>
+        <h1 style={{ margin: "6px 0 12px", fontSize: 28 }}>保存したフレーム</h1>
 
-      <div
-        style={{
-          marginTop: 18,
-          border: "1px solid rgba(255,255,255,0.12)",
-          padding: 18,
-          maxWidth: 980,
-        }}
-      >
-        <div style={{ fontSize: 12, opacity: 0.8, letterSpacing: "0.12em" }}>NEXT STEP</div>
-        <div style={{ fontSize: 18, fontWeight: 600, marginTop: 6 }}>保存した中から、買う。</div>
-
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 14, alignItems: "center" }}>
-          <button className="btn btnPrimary" type="button" onClick={buyAll} style={{ borderRadius: 0 }}>
-            全部購入
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+          <button
+            className="btn btnPrimary"
+            type="button"
+            onClick={checkoutAll}
+            disabled={busy}
+            style={{ borderRadius: 0 }}
+          >
+            {busy ? "処理中..." : `全部購入（¥${yen(totalYen)}）`}
           </button>
 
           <Link className="btn" href="/works" style={{ borderRadius: 0 }}>
-            作品を追加で探す
+            作品を追加して探す
           </Link>
 
-          <div style={{ fontSize: 12, opacity: 0.7 }}>
-            {sellableSlugs.length}件（購入可能）
+          <button
+            className="btn"
+            type="button"
+            onClick={() => setSlugs(readFavoriteSlugs())}
+            style={{ borderRadius: 0, opacity: 0.85 }}
+          >
+            更新
+          </button>
+
+          <div style={{ fontSize: 12, opacity: 0.75 }}>
+            {items.length}件 / 販売中 {sellable.length}件
           </div>
         </div>
+
+        {msg ? (
+          <div style={{ marginTop: 10, fontSize: 12, color: "#ffb4b4", whiteSpace: "pre-wrap" }}>{msg}</div>
+        ) : null}
       </div>
 
-      <div className="fullBleed" style={{ marginTop: 18 }}>
+      <div className="fullBleed" style={{ marginTop: 16 }}>
         <div className="shortsGrid">
-          {favoriteWorks.map((w) => (
-            <div key={w.slug} style={{ position: "relative" }}>
-              <Link
-                href={`/p/${w.slug}`}
-                className="shortsTile"
-                style={{
-                  position: "relative",
-                  display: "block",
-                  overflow: "hidden",
-                  borderRadius: 0,
-                  border: "1px solid rgba(255,255,255,0.10)",
-                }}
-              >
-                <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
-                  <img
-                    src={w.image}
-                    alt={w.slug}
-                    className="shortsImg"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                      borderRadius: 0,
-                    }}
-                  />
-                </div>
-              </Link>
-
-              <div
-                style={{ position: "absolute", top: 10, right: 10, zIndex: 3 }}
-                onClick={(e) => e.preventDefault()}
-                onMouseDown={(e) => e.preventDefault()}
-                onTouchStart={(e) => e.preventDefault()}
-              >
-                <FavoriteButton slug={w.slug} compact size={18} />
+          {items.map((w: any) => (
+            <Link
+              key={w.slug}
+              href={`/p/${w.slug}`}
+              className="shortsTile"
+              style={{
+                position: "relative",
+                display: "block",
+                overflow: "hidden",
+                borderRadius: 0,
+                border: "1px solid rgba(255,255,255,0.10)",
+              }}
+            >
+              <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
+                <img
+                  src={w.image}
+                  alt={w.slug}
+                  className="shortsImg"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
