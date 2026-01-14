@@ -121,7 +121,7 @@ export default function HomePage() {
   {/* 左：Still */}
   <div className="sampleCol">
     <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
-      Still（購入ページで見る1枚）
+      <div className="sampleCap">Still（購入ページで見る1枚）</div>
     </div>
     <div className="sampleFrame">
       <img
@@ -146,7 +146,7 @@ export default function HomePage() {
   {/* 右：Motion */}
   <div className="sampleCol">
     <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
-      Motion（1枚を起点に動かした例）
+      <div className="sampleCap">Motion（1枚を起点に動かした例）</div>
     </div>
 
     <div className="sampleFrame">
@@ -268,6 +268,17 @@ export default function HomePage() {
               .sampleArrow{ font-size: 28px; }
               .sampleLabel{ font-size: 11px; padding: 6px 10px; }
             }
+            .sampleCap{
+  height: 26px;              /* ←ここで左右の位置が揃う */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  opacity: 0.72;
+  text-align: center;
+  margin-top: 8px;           /* もともとと同じ */
+}
+
           `}</style>
         </section>
 
