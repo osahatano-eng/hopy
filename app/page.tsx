@@ -117,72 +117,76 @@ export default function HomePage() {
               1枚から、動く
             </h2>
 
-            <div style={{ marginTop: 14 }} className="sampleRow">
-              <div className="sampleCol">
-                <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
-                  Still（購入ページで見る1枚）
-                </div>
-                <div className="sampleFrame">
-                  <img
-                    src="/samples/quiet-fire.png"
-                    alt="quiet-fire sample still"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                </div>
-              </div>
+<div style={{ marginTop: 14 }} className="sampleRow">
+  {/* 左：Still */}
+  <div className="sampleCol">
+    <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
+      Still（購入ページで見る1枚）
+    </div>
+    <div className="sampleFrame">
+      <img
+        src="/samples/quiet-fire.png"
+        alt="quiet-fire sample still"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block",
+        }}
+      />
+    </div>
+  </div>
 
-              <div className="sampleMid" aria-hidden="true">
-                <div className="sampleArrow">→</div>
-                <div className="sampleLabel">SAMPLE</div>
-              </div>
+  {/* 中央：矢印 */}
+  <div className="sampleMid" aria-hidden="true">
+    <div className="sampleArrow">→</div>
+    <div className="sampleLabel">SAMPLE</div>
+  </div>
 
-              <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
-                  Motion（1枚を起点に動かした例）
-                </div>
-              
+  {/* 右：Motion */}
+  <div className="sampleCol">
+    <div style={{ marginTop: 8, fontSize: 12, opacity: 0.72, textAlign: "center" }}>
+      Motion（1枚を起点に動かした例）
+    </div>
 
-                <div className="sampleFrame">
-                  <video
-                    src="/videos/quiet-fire.mp4"
-                    muted
-                    playsInline
-                    autoPlay
-                    loop
-                    preload="metadata"
-                    controls={false}
-                    onClick={(e) => {
-                      const v = e.currentTarget;
-                      if (v.paused) v.play();
-                      else v.pause();
-                    }}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                      cursor: "pointer",
-                    }}
-                  />
-                </div>
-<div className="sampleCol">
-                <div
-                  style={{
-                    marginBottom: 8,
-                    fontSize: 12,
-                    opacity: 0.75,
-                    lineHeight: 1.6,
-                    textAlign: "center",
-                  }}
-                >
-                  タップで停止／再生（音なし）
-                </div>
-              </div>
-            </div>
+    <div className="sampleFrame">
+      <video
+        src="/videos/quiet-fire.mp4"
+        muted
+        playsInline
+        autoPlay
+        loop
+        preload="metadata"
+        controls={false}
+        onClick={(e) => {
+          const v = e.currentTarget;
+          if (v.paused) v.play();
+          else v.pause();
+        }}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          display: "block",
+          cursor: "pointer",
+        }}
+      />
+    </div>
+
+    <div
+      style={{
+        marginTop: 8,
+        fontSize: 12,
+        opacity: 0.75,
+        lineHeight: 1.6,
+        textAlign: "center",
+      }}
+    >
+      タップで停止／再生（音なし）
+    </div>
+  </div>
+</div>
+
 
             <p className="smallP" style={{ marginTop: 14, opacity: 0.78 }}>
               Stillは、あなたのイメージを膨らます<strong>“最初のフレーム”</strong>。
