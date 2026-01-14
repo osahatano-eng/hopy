@@ -311,7 +311,7 @@ export default function HomePage() {
           </div>
 
           {/* ここを fullBleed にして Works と同じ「画面幅」グリッドにする */}
-          <div className="fullBleed" style={{ marginTop: 16 }}>
+          <div style={{ marginTop: 16 }}>
             <div className="featuredGrid">
               {featuredWorks.map((w: any) => (
                 <div key={w.slug} style={{ position: "relative" }}>
