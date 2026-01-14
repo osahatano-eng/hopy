@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import SiteFrame from "@/app/_components/SiteFrame";
 import { WORKS } from "@/lib/works";
+import FavoriteButton from "@/app/_components/FavoriteButton";
 
 function shuffle<T>(arr: T[]) {
   const a = [...arr];
@@ -300,56 +301,79 @@ export default function HomePage() {
 
         <hr className="hr" />
 
-        {/* ✅ FEATURED（復活） */}
+        {/* ✅ FEATURED（fullBleed＋♡追加） */}
         <section className="section">
           <div className="container">
             <div className="kicker">Featured</div>
             <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>
               いま、選ばれているフレーム
             </h2>
+          </div>
 
-            <div style={{ marginTop: 14 }} className="featuredGrid">
+          {/* ここを fullBleed にして Works と同じ「画面幅」グリッドにする */}
+          <div className="fullBleed" style={{ marginTop: 16 }}>
+            <div className="featuredGrid">
               {featuredWorks.map((w: any) => (
-                <Link
-                  key={w.slug}
-                  href={`/p/${w.slug}`}
-                  className="featuredTile"
-                  style={{
-                    position: "relative",
-                    display: "block",
-                    overflow: "hidden",
-                    borderRadius: 0,
-                    border: "1px solid rgba(255,255,255,0.10)",
-                    transform: canHover ? "translateZ(0)" : undefined,
-                  }}
-                >
-                  <div className="featuredFrame">
-                    <img
-                      src={w.image}
-                      alt={w.title ?? w.slug}
-                      className="featuredImg"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                        transition: canHover ? "transform 260ms ease" : undefined,
-                      }}
-                    />
-                  </div>
-
-                  <div className="featuredMeta">
-                    <div className="featuredTitle">{w.title ?? w.slug}</div>
-                    <div className="featuredSub">
-                      {w.stripePriceId ? "販売中" : "準備中"}
-                      {" · "}
-                      ¥{Number(w.price ?? 0).toLocaleString("ja-JP")}
+                <div key={w.slug} style={{ position: "relative" }}>
+                  <Link
+                    href={`/p/${w.slug}`}
+                    className="featuredTile"
+                    style={{
+                      position: "relative",
+                      display: "block",
+                      overflow: "hidden",
+                      borderRadius: 0,
+                      border: "1px solid rgba(255,255,255,0.10)",
+                      transform: canHover ? "translateZ(0)" : undefined,
+                    }}
+                  >
+                    <div className="featuredFrame">
+                      <img
+                        src={w.image}
+                        alt={w.title ?? w.slug}
+                        className="featuredImg"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                          transition: canHover ? "transform 260ms ease" : undefined,
+                        }}
+                      />
                     </div>
+
+                    <div className="featuredMeta">
+                      <div className="featuredTitle">{w.title ?? w.slug}</div>
+                      <div className="featuredSub">
+                        {w.stripePriceId ? "販売中" : "準備中"}
+                        {" · "}¥{Number(w.price ?? 0).toLocaleString("ja-JP")}
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* ★ 右上：お気に入り（Worksと同じやり方：押してもリンクへ飛ばさない） */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      zIndex: 3,
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onTouchStart={(e) => e.preventDefault()}
+                  >
+                    <FavoriteButton slug={w.slug} compact size={18} />
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
+          </div>
 
+          <div className="container">
             <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
               <Link className="btn btnPrimary" href="/works">
                 作品一覧で選ぶ
@@ -365,12 +389,14 @@ export default function HomePage() {
               display:grid;
               grid-template-columns: repeat(2, minmax(0,1fr));
               gap: 12px;
+              padding: 0 18px; /* fullBleedの端に少し余白（邪魔なら消してOK） */
             }
 
             @media (min-width: 920px){
               .featuredGrid{
                 grid-template-columns: repeat(4, minmax(0,1fr));
                 gap: 14px;
+                padding: 0 24px;
               }
             }
 
@@ -381,8 +407,10 @@ export default function HomePage() {
               background: rgba(242,242,242,0.05);
             }
 
-            .featuredTile:hover .featuredImg{
-              transform: scale(1.02);
+            @media (hover: hover) and (pointer: fine){
+              .featuredTile:hover .featuredImg{
+                transform: scale(1.02);
+              }
             }
 
             .featuredMeta{
@@ -408,7 +436,6 @@ export default function HomePage() {
             }
           `}</style>
         </section>
-
       </main>
     </SiteFrame>
   );
