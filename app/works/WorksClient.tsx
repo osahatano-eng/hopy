@@ -102,7 +102,7 @@ export default function WorksClient() {
       </div>
 
       {/* グリッド（Featuredと同じ見た目） */}
-      <div className="fullBleed" style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 16 }}>
         <div className="featuredGrid">
           {shown.map((w: any) => (
             <div key={w.slug} style={{ position: "relative" }}>
@@ -228,3 +228,4 @@ export default function WorksClient() {
     </div>
   );
 }
+
