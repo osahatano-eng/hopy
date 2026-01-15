@@ -96,7 +96,7 @@ export default function HomePage() {
                   9:16最適化
                 </strong>
                 <br />
-                Short / Reels / 壁紙向け。
+                Youtube Short / Instagram Reels / スマホ壁紙
               </div>
 
               <div className="proofItem">
