@@ -27,8 +27,9 @@ export const WORKS_META: Record<
     title: "5wf7bntd",
     price: 390,
     stripePriceId: "price_1SpnHhPdHZWs1X17U7CniiO3",
-  },
+  }
 } as const;
+
 
 
 
