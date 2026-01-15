@@ -225,7 +225,7 @@ export default function FavoritesClient() {
                   border: "1px solid rgba(255,255,255,0.10)",
                 }}
               >
-                <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
+                <div style={{ width: "100%", aspectRatio: "9 / 16" }}>
                   <img
                     src={w.image}
                     alt={w.slug}
@@ -293,3 +293,4 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
