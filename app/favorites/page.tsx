@@ -9,7 +9,7 @@ export default function FavoritesPage() {
           <div className="container">
             <div className="kicker">Favorites</div>
             <h1 style={{ margin: "10px 0 0", fontSize: 26, fontWeight: 500 }}>
-              保存したフレーム
+              お気に入りフレーム
             </h1>
 
             <FavoritesClient />
@@ -19,3 +19,4 @@ export default function FavoritesPage() {
     </SiteFrame>
   );
 }
+
