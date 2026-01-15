@@ -182,7 +182,7 @@ export default function FavoritesClient() {
     <div style={{ marginTop: 18 }}>
       <div style={{ border: "1px solid rgba(255,255,255,0.12)", padding: 18 }}>
         <div style={{ fontSize: 12, opacity: 0.7, letterSpacing: 1 }}>FAVORITES</div>
-        <h1 style={{ margin: "6px 0 12px", fontSize: 28 }}>保存したフレーム</h1>
+        <h1 style={{ margin: "6px 0 12px", fontSize: 28 }}>お気に入りフレーム</h1>
 
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
           <button
@@ -293,4 +293,5 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
 
