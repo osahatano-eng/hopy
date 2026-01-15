@@ -13,17 +13,23 @@ export const WORKS_META: Record<
     video?: string;
   }
 > = {
-  y8durmct: {
+  "y8durmct": {
     title: "y8durmct",
     price: 390,
     stripePriceId: "price_1Sov8RPdHZWs1X17dIDyEZPm",
   },
-  g4tywz0w: {
+  "g4tywz0w": {
     title: "g4tywz0w",
     price: 390,
     stripePriceId: "price_1SovAMPdHZWs1X17DxvgZ1Fg",
   },
+  "5wf7bntd": {
+    title: "5wf7bntd",
+    price: 390,
+    stripePriceId: "price_1SpngjPdHZWs1X17VuKOI5td",
+  },
 } as const;
+
 
 
 
