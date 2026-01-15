@@ -143,10 +143,11 @@ export default async function ProductPage({ params }: Props) {
                   </div>
 
                   <div style={{ marginTop: 14, fontSize: 12, opacity: 0.75, lineHeight: 1.75 }}>
+                    ・解像度：1080 x 1920<br />
+                    ・比率：9:16<br />
+                    ・形式：PNG<br />
+                    ・クレジット：無（商用利用OK）<br />
                     ・再配布・転売は禁止<br />
-                    ・商用利用OK（クレジット不要）<br />
-                    ・購入後の画像には透かし、クレジットは入りません<br />
-                    ・最適解データをダウンロードできます
                   </div>
 
                   <div style={{ marginTop: 12, fontSize: 12, opacity: 0.7, lineHeight: 1.6 }}>
@@ -224,6 +225,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
