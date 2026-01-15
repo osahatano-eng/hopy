@@ -169,7 +169,7 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
                         border: "1px solid rgba(255,255,255,0.10)",
                       }}
                     >
-                      <div style={{ width: "100%", aspectRatio: "4 / 5" }}>
+                      <div style={{ width: "100%", aspectRatio: "9 / 16" }}>
                         <img
                           src={it.image}
                           alt={it.title}
@@ -242,5 +242,6 @@ export default function SuccessClient({ sessionId }: { sessionId?: string }) {
     </div>
   );
 }
+
 
 
