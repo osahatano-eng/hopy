@@ -390,7 +390,7 @@ export default function HomePage() {
 
             .featuredFrame{
               width: 100%;
-              aspect-ratio: 4 / 5;
+              aspect-ratio: 9 / 16;
               overflow: hidden;
               background: rgba(242,242,242,0.05);
             }
