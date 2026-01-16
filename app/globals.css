@@ -43,7 +43,7 @@ button { font: inherit; }
 .h1 {
   font-size: clamp(36px, 5vw, 64px);
   line-height: 1.05;
-  margin: 14px 0 18px;
+  margin: 14px 0 16px;
   font-weight: 600;
 }
 
