@@ -49,7 +49,7 @@ button { font: inherit; }
 
 .sub {
   font-size: clamp(14px, 1.4vw, 16px);
-  line-height: 1.9;
+  line-height: 1.2;
   color: var(--muted);
   max-width: 56ch;
 }
