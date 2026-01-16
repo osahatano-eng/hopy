@@ -61,7 +61,7 @@ button { font: inherit; }
 .btnRow {
   display: flex;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 50px;
   flex-wrap: wrap;
 }
 
