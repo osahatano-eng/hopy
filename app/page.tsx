@@ -58,7 +58,7 @@ export default function HomePage() {
             <h1 className="h1">Silent Start</h1>
 
             <p className="sub">
-              まだ、出ていない。
+              <strong>まだ、出ていない。</strong>
               <br /><br />
               出発直前の、静かな風景。
             </p>
