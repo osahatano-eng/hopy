@@ -58,14 +58,9 @@ export default function HomePage() {
             <h1 className="h1">Silent Start</h1>
 
             <p className="sub">
-              これは、完成された1枚ではありません。
-              <br />
-              物語が動き出す直前の、
-              <br />
-              <strong>“最初のフレーム”</strong>です。
-              <br />
-              <br />
-              ここから先は、あなたの編集です。
+              まだ、出ていない。
+              <br /><br />
+              出発直前の、静かな風景。
             </p>
 
             <div className="btnRow">
