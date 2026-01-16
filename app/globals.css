@@ -48,6 +48,7 @@ button { font: inherit; }
 }
 
 .sub {
+  margin: 0;
   font-size: clamp(14px, 1.4vw, 16px);
   line-height: 1.2;
   color: var(--muted);
