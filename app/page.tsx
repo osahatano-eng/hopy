@@ -55,7 +55,7 @@ export default function HomePage() {
         <section className="hero">
           <div className="container">
             <div className="kicker">AI Visual Studio</div>
-            <h1 className="h1">この1枚から、映像が始まる。</h1>
+            <h1 className="h1">Silent Start</h1>
 
             <p className="sub">
               これは、完成された1枚ではありません。
