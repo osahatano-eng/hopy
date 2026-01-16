@@ -59,6 +59,7 @@ export default function HomePage() {
 
             <p className="sub">
               <strong>まだ、出ていない。</strong>
+              <br />
               出発直前の、静かな風景。
             </p>
 
