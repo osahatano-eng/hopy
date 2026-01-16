@@ -36,9 +36,10 @@ export const WORKS_META: Record<
     "m48opy86": {
     title: "m48opy86",
     price: 390,
-    stripePriceId: "",
+    stripePriceId: "price_1Sq1RsPdHZWs1X17BtwNxk9e",
   },
 } as const;
+
 
 
 
