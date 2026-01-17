@@ -22,7 +22,7 @@ function pickFeaturedStable() {
     .slice(0, 8);
 }
 
-// ★クライアント側でだけランダム
+// ★クライアント側でだけランダム（販売中優先）
 function pickFeaturedRandomStrong() {
   const sellable = shuffle(WORKS.filter((w) => Boolean(w.stripePriceId)));
   const others = shuffle(WORKS.filter((w) => !w.stripePriceId));
@@ -51,45 +51,18 @@ export default function HomePage() {
   return (
     <SiteFrame>
       <main>
-        {/* Hero */}
-        <section className="hero">
+        {/* Hero：タイトルだけ → 直下から画像 */}
+        <section className="heroMinimal">
           <div className="container">
             <div className="kicker">AI VISUAL STUDIO</div>
             <h1 className="h1">Silent Start</h1>
-
-            <p className="sub">
-              <strong>まだ、出ていない。</strong>
-              <br />
-              出発直前の、静かな風景。
-            </p>
-
-            <div className="btnRow">
-              <Link className="btn btnPrimary" href="/works">
-                作品を見る
-              </Link>
-              <Link className="btn btnGhost" href="/contact">
-                依頼する
-              </Link>
-            </div>
-
-            <div className="scrollHint" aria-hidden="true">
-              <span>Scroll</span>
-              <span className="scrollLine" />
-            </div>
           </div>
         </section>
 
-        <hr className="hr" />
-
-        {/* FEATURED */}
-        <section className="section">
+        {/* ここから画像（Featured） */}
+        <section className="section" style={{ paddingTop: 22 }}>
           <div className="container">
-            <div className="kicker">Featured</div>
-            <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>
-              Frames
-            </h2>
-
-            <div style={{ marginTop: 14 }} className="featuredGrid">
+            <div className="featuredGrid">
               {featuredWorks.map((w: any) => (
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
@@ -119,6 +92,7 @@ export default function HomePage() {
                       />
                     </div>
 
+                    {/* メタは最小（不要なら丸ごと削除可能） */}
                     <div className="featuredMeta">
                       <div className="featuredTitle">{w.title ?? w.slug}</div>
                       <div className="featuredSub">
@@ -128,7 +102,7 @@ export default function HomePage() {
                     </div>
                   </Link>
 
-                  {/* Favorite */}
+                  {/* 右上：お気に入り */}
                   <div
                     style={{ position: "absolute", top: 10, right: 10, zIndex: 3 }}
                     onClick={(e) => {
@@ -155,6 +129,10 @@ export default function HomePage() {
           </div>
 
           <style>{`
+            .heroMinimal{
+              padding: 78px 0 18px;
+            }
+
             .featuredGrid{
               display:grid;
               grid-template-columns: repeat(2, minmax(0,1fr));
