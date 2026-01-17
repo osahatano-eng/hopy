@@ -15,14 +15,14 @@ function shuffle<T>(arr: T[]) {
   return a;
 }
 
-// ★SSR/初回表示用（固定）：販売中優先で上から8（ランダムなし）
+// ★SSR/初回表示用（固定）
 function pickFeaturedStable() {
   return [...WORKS]
     .sort((a, b) => Number(Boolean(b.stripePriceId)) - Number(Boolean(a.stripePriceId)))
     .slice(0, 8);
 }
 
-// ★クライアント側でだけランダム（販売中優先で強め）
+// ★クライアント側でだけランダム
 function pickFeaturedRandomStrong() {
   const sellable = shuffle(WORKS.filter((w) => Boolean(w.stripePriceId)));
   const others = shuffle(WORKS.filter((w) => !w.stripePriceId));
@@ -54,7 +54,7 @@ export default function HomePage() {
         {/* Hero */}
         <section className="hero">
           <div className="container">
-            <div className="kicker">AI Visual Studio</div>
+            <div className="kicker">AI VISUAL STUDIO</div>
             <h1 className="h1">Silent Start</h1>
 
             <p className="sub">
@@ -76,43 +76,17 @@ export default function HomePage() {
               <span>Scroll</span>
               <span className="scrollLine" />
             </div>
-
-            <div className="proof">
-              <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
-                  映像の起点
-                </strong>
-                <br />
-                1枚目から“始まる前提”で設計。
-              </div>
-
-              <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
-                  9:16最適化
-                </strong>
-                <br />
-                Youtube Short / Instagram Reels / スマホ壁紙
-              </div>
-
-              <div className="proofItem">
-                <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>
-                  即、動かせる
-                </strong>
-                <br />
-                決済後すぐに納品。やり取りなしで完結します。
-              </div>
-            </div>
           </div>
         </section>
 
         <hr className="hr" />
 
-        {/* ✅ FEATURED（container内のまま、♡追加） */}
+        {/* FEATURED */}
         <section className="section">
           <div className="container">
             <div className="kicker">Featured</div>
             <h2 style={{ margin: "10px 0 0", fontSize: 22, fontWeight: 500 }}>
-              いま、選ばれているフレーム
+              Frames
             </h2>
 
             <div style={{ marginTop: 14 }} className="featuredGrid">
@@ -154,7 +128,7 @@ export default function HomePage() {
                     </div>
                   </Link>
 
-                  {/* ★ 右上：お気に入り（押してもリンクへ飛ばない） */}
+                  {/* Favorite */}
                   <div
                     style={{ position: "absolute", top: 10, right: 10, zIndex: 3 }}
                     onClick={(e) => {
@@ -172,10 +146,10 @@ export default function HomePage() {
 
             <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
               <Link className="btn btnPrimary" href="/works">
-                作品一覧で選ぶ
+                作品一覧
               </Link>
               <Link className="btn" href="/favorites">
-                ♡お気に入りを見る
+                ♡ お気に入り
               </Link>
             </div>
           </div>
