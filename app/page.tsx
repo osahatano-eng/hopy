@@ -54,7 +54,7 @@ export default function HomePage() {
         {/* Hero：タイトルだけ → 直下から画像 */}
         <section className="heroMinimal">
           <div className="container">
-            <div className="kicker">AI VISUAL STUDIO</div>
+            <div className="kicker">AI VISUAL STUDIO  9:16 (1080x1920)</div>
             <h1 className="h1">Silent Start</h1>
           </div>
         </section>
