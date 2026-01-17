@@ -117,15 +117,6 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-
-            <div style={{ marginTop: 14, display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <Link className="btn btnPrimary" href="/works">
-                作品一覧
-              </Link>
-              <Link className="btn" href="/favorites">
-                ♡ お気に入り
-              </Link>
-            </div>
           </div>
 
           <style>{`
