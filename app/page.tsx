@@ -91,15 +91,6 @@ export default function HomePage() {
                         }}
                       />
                     </div>
-
-                    {/* メタは最小（不要なら丸ごと削除可能） */}
-                    <div className="featuredMeta">
-                      <div className="featuredTitle">{w.title ?? w.slug}</div>
-                      <div className="featuredSub">
-                        {w.stripePriceId ? "販売中" : "準備中"}
-                        {" · "}¥{Number(w.price ?? 0).toLocaleString("ja-JP")}
-                      </div>
-                    </div>
                   </Link>
 
                   {/* 右上：お気に入り */}
