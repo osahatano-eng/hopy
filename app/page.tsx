@@ -6,14 +6,22 @@ import SiteFrame from "@/app/_components/SiteFrame";
 import { WORKS } from "@/lib/works";
 import FavoriteButton from "@/app/_components/FavoriteButton";
 
-/** ★ここを書き換えるだけで並び替えできる（最大12） */
+/** ★ここを書き換えるだけで並び替え（最大12） */
 const HOME_FIXED_IDS = [
   "949vogeu",
   "37z1mdu6",
   "0xl7t7xl",
   "8a24swce",
-  "hty8ut3e","use client";
-
+  "hty8ut3e",
+  "up73h59u",
+  "y8durmct",
+  "e1c8e0le",
+  "3nrqtvl7",
+  "r8gor02s",
+  "7yknd8pc",
+  "g4tywz0w",
+  // ここに8桁IDを並べる
+];
 import Link from "next/link";
 import { useMemo } from "react";
 import SiteFrame from "@/app/_components/SiteFrame";
