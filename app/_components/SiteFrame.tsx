@@ -23,14 +23,21 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
     <>
       <header className="nav">
         <div className="container navInner">
-          <Link className="brand" href="/">HOPY AI</Link>
+          <Link className="brand" href="/">
+            HOPY AI
+          </Link>
 
           <nav className="navLinks" style={{ alignItems: "center" }}>
-            <Link className="navLink" href="/works">Works</Link>
-            <Link className="navLink" href="/license">License</Link>
-            <Link className="navLink" href="/contact">Contact</Link>
+            <Link className="navLink" href="/works">
+              Works
+            </Link>
+            <Link className="navLink" href="/license">
+              License
+            </Link>
+            <Link className="navLink" href="/contact">
+              Contact
+            </Link>
 
-            {/* お気に入り：♡ + 数字バッジだけ（全デバイス共通） */}
             <Link
               className="btn"
               href="/favorites"
@@ -44,8 +51,6 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
               aria-label="お気に入り"
             >
               ♡
-
-              {/* バッジ：1以上のときだけ表示 */}
               {mounted && count > 0 && (
                 <span
                   aria-hidden="true"
@@ -68,12 +73,15 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
               )}
             </Link>
 
-            <Link className="btn btnPrimary" href="/works">作品を見る</Link>
+            <Link className="btn btnPrimary" href="/works">
+              作品を見る
+            </Link>
           </nav>
         </div>
       </header>
 
-      {children}
+      {/*  全ページでヘッダー潜りを根絶 */}
+      <div className="page">{children}</div>
 
       <footer className="footer">
         <div className="container">
@@ -84,7 +92,9 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
                 必要なときだけ、思い出してください。
               </div>
               <div className="btnRow" style={{ marginTop: 18 }}>
-                <Link className="btn btnPrimary" href="/works">作品を見る</Link>
+                <Link className="btn btnPrimary" href="/works">
+                  作品を見る
+                </Link>
               </div>
             </div>
 
@@ -101,47 +111,13 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
           <div style={{ color: "rgba(242,242,242,0.5)", fontSize: 12 }}>
             © {new Date().getFullYear()} HOPY CORPORATION
           </div>
-          {/* 追加：HOPY AI（containerいっぱい・真っ白・でかい） */}
+
+          {/*  CSSは globals.css へ移動（iOS戻るの安定化） */}
           <div className="footerBigBrand" aria-label="HOPY AI">
             HOPY AI
           </div>
-
-          <style>{`
-            .footerBigBrand{
-              margin-top: 50px;
-              width: 100%;
-              color: #fff;
-              font-weight: 700;
-              letter-spacing: 0.06em;
-              line-height: 1;
-              /* 画面サイズで自動調整：スマホでもPCでもでかい */
-              font-size: clamp(78px, 18vw, 300px);
-
-              /* container内で幅いっぱいに見せる */
-              display: block;
-
-              /* 左寄せにしたいなら left、中央なら center */
-              text-align: center;
-            }
-          `}</style>
         </div>
       </footer>
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
