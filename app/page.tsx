@@ -1,113 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import SiteFrame from "@/app/_components/SiteFrame";
 import { WORKS } from "@/lib/works";
 import FavoriteButton from "@/app/_components/FavoriteButton";
 
-function shuffle<T>(arr: T[]) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+/** ★ここを書き換えるだけで並び替えできる（最大12） */
+const HOME_FIXED_IDS = [
+  "00000000",
+  "44344444",
+  "kkkkkkkk",
+  // "........",
+];
+
+function pickHomeByIds(ids: string[]) {
+  const map = new Map(WORKS.map((w: any) => [w.slug, w]));
+  const picked: any[] = [];
+
+  for (const id of ids) {
+    const w = map.get(id);
+    if (w) picked.push(w);
+    if (picked.length >= 12) break;
   }
-  return a;
-}
 
-// ★SSR/初回表示用（固定）
-function pickFeaturedStable() {
-  return [...WORKS]
-    .sort((a, b) => Number(Boolean(b.stripePriceId)) - Number(Boolean(a.stripePriceId)))
-    .slice(0, 8);
-}
-
-// ★クライアント側でだけランダム（販売中優先で強め）
-function pickFeaturedRandomStrong() {
-  const sellable = shuffle(WORKS.filter((w) => Boolean(w.stripePriceId)));
-  const others = shuffle(WORKS.filter((w) => !w.stripePriceId));
-  const picked = [...sellable.slice(0, 6), ...others].slice(0, 8);
-  return shuffle(picked);
-}
-
-const SCROLL_KEY = "hopy:home:scrollY";
-const RESTORE_FLAG = "hopy:home:restore";
-
-function markRestore() {
-  try {
-    sessionStorage.setItem(RESTORE_FLAG, "1");
-    sessionStorage.setItem(SCROLL_KEY, String(window.scrollY || 0));
-  } catch {}
-}
-
-function consumeRestoreFlag(): boolean {
-  try {
-    const ok = sessionStorage.getItem(RESTORE_FLAG) === "1";
-    sessionStorage.removeItem(RESTORE_FLAG);
-    return ok;
-  } catch {
-    return false;
-  }
-}
-
-function readSavedScrollY(): number {
-  try {
-    const raw = sessionStorage.getItem(SCROLL_KEY);
-    return raw ? Number(raw) : 0;
-  } catch {
-    return 0;
-  }
-}
-
-function getNavType(): string {
-  // iOS/Chromeでも取れる可能性が高い
-  try {
-    const nav = performance.getEntriesByType("navigation")?.[0] as any;
-    return nav?.type || "navigate";
-  } catch {
-    return "navigate";
-  }
+  return picked;
 }
 
 export default function HomePage() {
-  const stable = useMemo(() => pickFeaturedStable(), []);
-  const [featuredWorks, setFeaturedWorks] = useState<any[]>(stable);
-
-  // 初回マウント時：戻る(bfcache/back_forward)なら「何もしない」
-  useEffect(() => {
-    // iOSの“戻る”で scroll を勝手に変えないように manual
-    try {
-      if ("scrollRestoration" in window.history) {
-        window.history.scrollRestoration = "manual";
-      }
-    } catch {}
-
-    const navType = getNavType();
-    const isBackForward = navType === "back_forward";
-
-    // ✅ 戻る時はランダム禁止（ここが最重要）
-    if (!isBackForward) {
-      setFeaturedWorks(pickFeaturedRandomStrong());
-    }
-
-    // iOSの右スワイプ戻る(bfcache)で効く：pageshowで復元
-    const onPageShow = (e: PageTransitionEvent) => {
-      // persisted = bfcache 復帰
-      const shouldRestore = e.persisted || consumeRestoreFlag();
-      if (!shouldRestore) return;
-
-      const y = readSavedScrollY();
-
-      // 画像/レイアウト確定待ちで複数回
-      requestAnimationFrame(() => window.scrollTo(0, y));
-      setTimeout(() => window.scrollTo(0, y), 0);
-      setTimeout(() => window.scrollTo(0, y), 80);
-      setTimeout(() => window.scrollTo(0, y), 200);
-    };
-
-    window.addEventListener("pageshow", onPageShow);
-    return () => window.removeEventListener("pageshow", onPageShow);
-  }, []);
+  const fixedWorks = useMemo(() => pickHomeByIds(HOME_FIXED_IDS), []);
 
   return (
     <SiteFrame>
@@ -122,12 +43,10 @@ export default function HomePage() {
         <section className="section" style={{ paddingTop: 22 }}>
           <div className="container">
             <div className="featuredGrid">
-              {featuredWorks.map((w: any) => (
+              {fixedWorks.map((w: any) => (
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
                     href={`/p/${w.slug}`}
-                    // ✅ 詳細へ行く直前に「戻り復元フラグ + scrollY」を保存
-                    onClick={() => markRestore()}
                     className="featuredTile"
                     style={{
                       position: "relative",
@@ -140,7 +59,7 @@ export default function HomePage() {
                     <div className="featuredFrame">
                       <img
                         src={w.image}
-                        alt={w.title ?? w.slug}
+                        alt={w.slug}
                         style={{
                           width: "100%",
                           height: "100%",
@@ -171,17 +90,20 @@ export default function HomePage() {
             .heroMinimal{
               padding: 78px 0 18px;
             }
+
             .featuredGrid{
               display:grid;
               grid-template-columns: repeat(2, minmax(0,1fr));
               gap: 12px;
             }
+
             @media (min-width: 920px){
               .featuredGrid{
                 grid-template-columns: repeat(4, minmax(0,1fr));
                 gap: 14px;
               }
             }
+
             .featuredFrame{
               width: 100%;
               aspect-ratio: 9 / 16;
