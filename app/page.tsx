@@ -5,11 +5,6 @@ import { useMemo } from "react";
 import SiteFrame from "@/app/_components/SiteFrame";
 import { WORKS } from "@/lib/works";
 import FavoriteButton from "@/app/_components/FavoriteButton";
-import Link from "next/link";
-import { useMemo } from "react";
-import SiteFrame from "@/app/_components/SiteFrame";
-import { WORKS } from "@/lib/works";
-import FavoriteButton from "@/app/_components/FavoriteButton";
 
 /** ★ここを書き換えるだけで並び替え（最大12） */
 const HOME_FIXED_IDS = [
