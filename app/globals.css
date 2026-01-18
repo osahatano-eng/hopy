@@ -331,8 +331,19 @@ main {
   --navH: 68px; /* navInner heightと一致させる */
 }
 
-/* ✅ headerの下から必ず開始（全ページ共通） */
+/*  headerの下から必ず開始（全ページ共通） */
 .page{
   padding-top: var(--navH);
+}
+.footerBigBrand{
+  margin-top: 50px;
+  width: 100%;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  font-size: clamp(78px, 18vw, 300px);
+  display: block;
+  text-align: center;
 }
 
