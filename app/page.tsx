@@ -14,11 +14,11 @@ const HOME_FIXED_IDS = [
   "8a24swce",
   "hty8ut3e",
   "up73h59u",
-  "7yknd8pc",
+  "y8durmct",
   "e1c8e0le",
   "3nrqtvl7",
   "r8gor02s",
-  "y8durmct",
+  "7yknd8pc",
   "g4tywz0w",
   // "........",
 ];
