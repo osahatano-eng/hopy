@@ -15,19 +15,44 @@ function shuffle<T>(arr: T[]) {
   return a;
 }
 
-// ★SSR/初回表示用（固定）
 function pickFeaturedStable() {
   return [...WORKS]
     .sort((a, b) => Number(Boolean(b.stripePriceId)) - Number(Boolean(a.stripePriceId)))
     .slice(0, 8);
 }
 
-// ★クライアント側でだけランダム（販売中優先）
 function pickFeaturedRandomStrong() {
   const sellable = shuffle(WORKS.filter((w) => Boolean(w.stripePriceId)));
   const others = shuffle(WORKS.filter((w) => !w.stripePriceId));
-  const picked = [...sellable.slice(0, 8), ...others].slice(0, 8);
+  const picked = [...sellable.slice(0, 6), ...others].slice(0, 8);
   return shuffle(picked);
+}
+
+const SCROLL_KEY = "hopy:home:scrollY";
+const RESTORE_FLAG = "hopy:home:restore";
+
+function saveHomeScroll() {
+  try {
+    sessionStorage.setItem(SCROLL_KEY, String(window.scrollY || 0));
+    sessionStorage.setItem(RESTORE_FLAG, "1");
+  } catch {}
+}
+
+function restoreHomeScrollIfNeeded() {
+  try {
+    const flag = sessionStorage.getItem(RESTORE_FLAG);
+    if (flag !== "1") return;
+
+    const raw = sessionStorage.getItem(SCROLL_KEY);
+    const y = raw ? Number(raw) : 0;
+
+    // 一回だけ復元（次の通常遷移で邪魔しない）
+    sessionStorage.removeItem(RESTORE_FLAG);
+
+    // 描画後に復元（iOS/Safariの戻る対策で2段構え）
+    requestAnimationFrame(() => window.scrollTo(0, y));
+    setTimeout(() => window.scrollTo(0, y), 0);
+  } catch {}
 }
 
 export default function HomePage() {
@@ -38,8 +63,17 @@ export default function HomePage() {
     setFeaturedWorks(pickFeaturedRandomStrong());
   }, []);
 
-  const [canHover, setCanHover] = useState(false);
+  // 戻ってきた時だけスクロール位置を復元
+  useEffect(() => {
+    restoreHomeScrollIfNeeded();
 
+    // iPhoneのスワイプ戻るは pageshow で復元されることがあるのでケア
+    const onPageShow = () => restoreHomeScrollIfNeeded();
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
+
+  const [canHover, setCanHover] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
     const update = () => setCanHover(mq.matches);
@@ -59,7 +93,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ここから画像（Featured） */}
+        {/* 画像グリッド（無言） */}
         <section className="section" style={{ paddingTop: 22 }}>
           <div className="container">
             <div className="featuredGrid">
@@ -67,6 +101,8 @@ export default function HomePage() {
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
                     href={`/p/${w.slug}`}
+                    // ★遷移前に「トップのスクロール位置」を保存する
+                    onClick={() => saveHomeScroll()}
                     className="featuredTile"
                     style={{
                       position: "relative",
@@ -133,34 +169,6 @@ export default function HomePage() {
               aspect-ratio: 9 / 16;
               overflow: hidden;
               background: rgba(242,242,242,0.05);
-            }
-
-            @media (hover: hover) and (pointer: fine){
-              .featuredTile:hover .featuredImg{
-                transform: scale(1.02);
-              }
-            }
-
-            .featuredMeta{
-              padding: 10px 10px 12px;
-              background: rgba(0,0,0,0.18);
-              border-top: 1px solid rgba(255,255,255,0.08);
-            }
-
-            .featuredTitle{
-              font-size: 12px;
-              opacity: 0.92;
-              line-height: 1.4;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
-
-            .featuredSub{
-              margin-top: 6px;
-              font-size: 11px;
-              opacity: 0.7;
-              letter-spacing: 0.02em;
             }
           `}</style>
         </section>
