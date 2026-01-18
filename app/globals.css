@@ -327,4 +327,12 @@ main {
 .heroMinimal {
   padding: calc(var(--navH) + 24px) 0 18px; /* 68 + 24 = 92px */
 }
+:root{
+  --navH: 68px; /* navInner heightと一致させる */
+}
+
+/* ✅ headerの下から必ず開始（全ページ共通） */
+.page{
+  padding-top: var(--navH);
+}
 
