@@ -108,7 +108,13 @@ export const WORKS_META: Record<
     price: 390,
     stripePriceId: "price_1SqkvjPdHZWs1X17uNt2VbMF",
   },
+   "949vogeu": {
+    title: "949vogeu",
+    price: 390,
+    stripePriceId: "price_1SqlwoPdHZWs1X17IqzRamnd",
+  },
 } as const;
+
 
 
 
