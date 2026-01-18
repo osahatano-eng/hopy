@@ -80,8 +80,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      {/*  全ページでヘッダー潜りを根絶 */}
-      <div className="page">{children}</div>
+      {children}
 
       <footer className="footer">
         <div className="container">
@@ -112,7 +111,6 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
             © {new Date().getFullYear()} HOPY CORPORATION
           </div>
 
-          {/*  CSSは globals.css へ移動（iOS戻るの安定化） */}
           <div className="footerBigBrand" aria-label="HOPY AI">
             HOPY AI
           </div>
