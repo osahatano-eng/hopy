@@ -67,7 +67,6 @@ export default function HomePage() {
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
                     href={`/p/${w.slug}`}
-                    scroll={false} // ★戻ったときに先頭へ飛びにくくする
                     className="featuredTile"
                     style={{
                       position: "relative",
