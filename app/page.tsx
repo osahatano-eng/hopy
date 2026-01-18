@@ -26,7 +26,7 @@ function pickFeaturedStable() {
 function pickFeaturedRandomStrong() {
   const sellable = shuffle(WORKS.filter((w) => Boolean(w.stripePriceId)));
   const others = shuffle(WORKS.filter((w) => !w.stripePriceId));
-  const picked = [...sellable.slice(0, 6), ...others].slice(0, 8);
+  const picked = [...sellable.slice(0, 8), ...others].slice(0, 8);
   return shuffle(picked);
 }
 
