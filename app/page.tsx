@@ -17,7 +17,7 @@ const HOME_FIXED_IDS = [
   "7yknd8pc",
   "e1c8e0le",
   "3nrqtvl7",
-  "e1c8e0le",
+  "r8gor02s",
   "y8durmct",
   "g4tywz0w",
   // "........",
