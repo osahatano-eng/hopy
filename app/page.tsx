@@ -15,12 +15,14 @@ function shuffle<T>(arr: T[]) {
   return a;
 }
 
+// ★SSR/初回表示用（固定）
 function pickFeaturedStable() {
   return [...WORKS]
     .sort((a, b) => Number(Boolean(b.stripePriceId)) - Number(Boolean(a.stripePriceId)))
     .slice(0, 8);
 }
 
+// ★クライアント側でだけランダム（販売中優先）
 function pickFeaturedRandomStrong() {
   const sellable = shuffle(WORKS.filter((w) => Boolean(w.stripePriceId)));
   const others = shuffle(WORKS.filter((w) => !w.stripePriceId));
@@ -29,50 +31,118 @@ function pickFeaturedRandomStrong() {
 }
 
 const SCROLL_KEY = "hopy:home:scrollY";
-const RESTORE_FLAG = "hopy:home:restore";
+const ORDER_KEY = "hopy:home:order"; // JSON: string[]
+const RESTORE_FLAG = "hopy:home:restore"; // "1" のときだけ復元
 
-function saveHomeScroll() {
+function saveHomeState(orderSlugs: string[]) {
   try {
     sessionStorage.setItem(SCROLL_KEY, String(window.scrollY || 0));
+    sessionStorage.setItem(ORDER_KEY, JSON.stringify(orderSlugs));
     sessionStorage.setItem(RESTORE_FLAG, "1");
   } catch {}
 }
 
-function restoreHomeScrollIfNeeded() {
+function readRestoreFlag() {
   try {
-    const flag = sessionStorage.getItem(RESTORE_FLAG);
-    if (flag !== "1") return;
+    return sessionStorage.getItem(RESTORE_FLAG) === "1";
+  } catch {
+    return false;
+  }
+}
 
-    const raw = sessionStorage.getItem(SCROLL_KEY);
-    const y = raw ? Number(raw) : 0;
-
-    // 一回だけ復元（次の通常遷移で邪魔しない）
+function consumeRestoreFlag() {
+  try {
     sessionStorage.removeItem(RESTORE_FLAG);
-
-    // 描画後に復元（iOS/Safariの戻る対策で2段構え）
-    requestAnimationFrame(() => window.scrollTo(0, y));
-    setTimeout(() => window.scrollTo(0, y), 0);
   } catch {}
+}
+
+function readSavedScrollY(): number {
+  try {
+    const raw = sessionStorage.getItem(SCROLL_KEY);
+    return raw ? Number(raw) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function readSavedOrder(): string[] | null {
+  try {
+    const raw = sessionStorage.getItem(ORDER_KEY);
+    if (!raw) return null;
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : null;
+  } catch {
+    return null;
+  }
+}
+
+function buildWorksBySlugs(slugs: string[]): any[] | null {
+  const map = new Map<string, any>();
+  for (const w of WORKS as any[]) map.set(w.slug, w);
+
+  const list: any[] = [];
+  for (const s of slugs) {
+    const w = map.get(s);
+    if (w) list.push(w);
+  }
+  // 保存内容が古い/不足なら不採用
+  if (list.length !== 8) return null;
+  return list;
 }
 
 export default function HomePage() {
   const stable = useMemo(() => pickFeaturedStable(), []);
-  const [featuredWorks, setFeaturedWorks] = useState(stable);
+  const [featuredWorks, setFeaturedWorks] = useState<any[]>(stable);
 
+  // 戻り復元中かどうか（この間はランダムしない）
+  const [isRestoring, setIsRestoring] = useState(false);
+
+  // 1) マウント時：復元フラグがあれば「並び」を先に復元、なければランダム
   useEffect(() => {
+    // iOSの戻ると競合しないように
+    try {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "manual";
+      }
+    } catch {}
+
+    const shouldRestore = readRestoreFlag();
+    if (shouldRestore) {
+      setIsRestoring(true);
+      const saved = readSavedOrder();
+      const restored = saved ? buildWorksBySlugs(saved) : null;
+      if (restored) {
+        setFeaturedWorks(restored);
+      } else {
+        // 何かおかしい時は通常運転へ
+        setFeaturedWorks(pickFeaturedRandomStrong());
+        consumeRestoreFlag();
+        setIsRestoring(false);
+      }
+      return;
+    }
+
+    // 通常訪問：ランダム
     setFeaturedWorks(pickFeaturedRandomStrong());
   }, []);
 
-  // 戻ってきた時だけスクロール位置を復元
+  // 2) 復元時：並びが入った「後」にスクロール復元
   useEffect(() => {
-    restoreHomeScrollIfNeeded();
+    if (!isRestoring) return;
 
-    // iPhoneのスワイプ戻るは pageshow で復元されることがあるのでケア
-    const onPageShow = () => restoreHomeScrollIfNeeded();
-    window.addEventListener("pageshow", onPageShow);
-    return () => window.removeEventListener("pageshow", onPageShow);
-  }, []);
+    const y = readSavedScrollY();
 
+    // 1フレーム待ってから戻す（画像の高さ確定待ち）
+    requestAnimationFrame(() => window.scrollTo(0, y));
+    // iOS対策で念押し
+    setTimeout(() => window.scrollTo(0, y), 0);
+    setTimeout(() => window.scrollTo(0, y), 60);
+
+    consumeRestoreFlag();
+    setIsRestoring(false);
+  }, [isRestoring, featuredWorks]);
+
+  // hover判定（あなたはhover不要と言っていたので、今後消してもOK）
   const [canHover, setCanHover] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -85,7 +155,6 @@ export default function HomePage() {
   return (
     <SiteFrame>
       <main>
-        {/* Hero：タイトルだけ → 直下から画像 */}
         <section className="heroMinimal">
           <div className="container">
             <div className="kicker">AI VISUAL STUDIO</div>
@@ -93,7 +162,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 画像グリッド（無言） */}
         <section className="section" style={{ paddingTop: 22 }}>
           <div className="container">
             <div className="featuredGrid">
@@ -101,8 +169,8 @@ export default function HomePage() {
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
                     href={`/p/${w.slug}`}
-                    // ★遷移前に「トップのスクロール位置」を保存する
-                    onClick={() => saveHomeScroll()}
+                    // 遷移前に「スクロール + 並び」を保存
+                    onClick={() => saveHomeState(featuredWorks.map((x) => x.slug))}
                     className="featuredTile"
                     style={{
                       position: "relative",
@@ -123,13 +191,11 @@ export default function HomePage() {
                           height: "100%",
                           objectFit: "cover",
                           display: "block",
-                          transition: canHover ? "transform 260ms ease" : undefined,
                         }}
                       />
                     </div>
                   </Link>
 
-                  {/* 右上：お気に入り */}
                   <div
                     style={{ position: "absolute", top: 10, right: 10, zIndex: 3 }}
                     onClick={(e) => {
