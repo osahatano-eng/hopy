@@ -8,9 +8,18 @@ import FavoriteButton from "@/app/_components/FavoriteButton";
 
 /** ★ここを書き換えるだけで並び替えできる（最大12） */
 const HOME_FIXED_IDS = [
-  "00000000",
-  "44344444",
-  "kkkkkkkk",
+  "949vogeu",
+  "37z1mdu6",
+  "0xl7t7xl",
+  "8a24swce",
+  "hty8ut3e",
+  "up73h59u",
+  "7yknd8pc",
+  "e1c8e0le",
+  "3nrqtvl7",
+  "e1c8e0le",
+  "y8durmct",
+  "g4tywz0w",
   // "........",
 ];
 
