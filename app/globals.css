@@ -313,3 +313,18 @@ html, body {
   -webkit-user-drag: none;     /* iOS/Chromeの画像ドラッグ抑止 */
   pointer-events: auto;
 }
+/* iOS戻る時の一瞬ズレ/潜り対策：ヘッダー高さ分を常に確保 */
+:root {
+  --navH: 68px;
+}
+
+/* スクロール復元時の「ヘッダーかぶり」を避ける */
+main {
+  scroll-padding-top: calc(var(--navH) + 18px);
+}
+
+/* Hero最上段はヘッダーより確実に下から始める */
+.heroMinimal {
+  padding: calc(var(--navH) + 24px) 0 18px; /* 68 + 24 = 92px */
+}
+
