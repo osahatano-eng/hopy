@@ -350,19 +350,4 @@ main {
   --navH: 68px;
 }
 
-/* トップのヒーローだけを確実に下げる（初回でも戻りでも安定） */
-.heroMinimal{
-  padding: calc(var(--navH) + 24px) 0 18px;
-}
-.footerBigBrand{
-  margin-top: 50px;
-  width: 100%;
-  color: #fff;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  font-size: clamp(78px, 18vw, 300px);
-  display: block;
-  text-align: center;
-}
 
