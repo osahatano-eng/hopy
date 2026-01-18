@@ -10,6 +10,7 @@
 html, body { height: 100%; }
 body {
   margin: 0;
+  padding-top:var(--navH);
   background: radial-gradient(1200px 600px at 20% 10%, rgba(255,255,255,0.06), transparent 60%),
               radial-gradient(1000px 500px at 80% 30%, rgba(255,255,255,0.04), transparent 55%),
               var(--bg);
@@ -84,7 +85,7 @@ button { font: inherit; }
 .btnGhost { color: var(--muted); }
 
 .nav {
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 10;
   backdrop-filter: blur(10px);
