@@ -22,7 +22,7 @@ function pickFeaturedStable() {
     .slice(0, 8);
 }
 
-// ★クライアント側でだけランダム（販売中優先）
+// ★クライアント側でだけランダム（販売中優先で強め）
 function pickFeaturedRandomStrong() {
   const sellable = shuffle(WORKS.filter((w) => Boolean(w.stripePriceId)));
   const others = shuffle(WORKS.filter((w) => !w.stripePriceId));
@@ -31,29 +31,23 @@ function pickFeaturedRandomStrong() {
 }
 
 const SCROLL_KEY = "hopy:home:scrollY";
-const ORDER_KEY = "hopy:home:order"; // JSON: string[]
-const RESTORE_FLAG = "hopy:home:restore"; // "1" のときだけ復元
+const RESTORE_FLAG = "hopy:home:restore";
 
-function saveHomeState(orderSlugs: string[]) {
+function markRestore() {
   try {
-    sessionStorage.setItem(SCROLL_KEY, String(window.scrollY || 0));
-    sessionStorage.setItem(ORDER_KEY, JSON.stringify(orderSlugs));
     sessionStorage.setItem(RESTORE_FLAG, "1");
+    sessionStorage.setItem(SCROLL_KEY, String(window.scrollY || 0));
   } catch {}
 }
 
-function readRestoreFlag() {
+function consumeRestoreFlag(): boolean {
   try {
-    return sessionStorage.getItem(RESTORE_FLAG) === "1";
+    const ok = sessionStorage.getItem(RESTORE_FLAG) === "1";
+    sessionStorage.removeItem(RESTORE_FLAG);
+    return ok;
   } catch {
     return false;
   }
-}
-
-function consumeRestoreFlag() {
-  try {
-    sessionStorage.removeItem(RESTORE_FLAG);
-  } catch {}
 }
 
 function readSavedScrollY(): number {
@@ -65,91 +59,54 @@ function readSavedScrollY(): number {
   }
 }
 
-function readSavedOrder(): string[] | null {
+function getNavType(): string {
+  // iOS/Chromeでも取れる可能性が高い
   try {
-    const raw = sessionStorage.getItem(ORDER_KEY);
-    if (!raw) return null;
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : null;
+    const nav = performance.getEntriesByType("navigation")?.[0] as any;
+    return nav?.type || "navigate";
   } catch {
-    return null;
+    return "navigate";
   }
-}
-
-function buildWorksBySlugs(slugs: string[]): any[] | null {
-  const map = new Map<string, any>();
-  for (const w of WORKS as any[]) map.set(w.slug, w);
-
-  const list: any[] = [];
-  for (const s of slugs) {
-    const w = map.get(s);
-    if (w) list.push(w);
-  }
-  // 保存内容が古い/不足なら不採用
-  if (list.length !== 8) return null;
-  return list;
 }
 
 export default function HomePage() {
   const stable = useMemo(() => pickFeaturedStable(), []);
   const [featuredWorks, setFeaturedWorks] = useState<any[]>(stable);
 
-  // 戻り復元中かどうか（この間はランダムしない）
-  const [isRestoring, setIsRestoring] = useState(false);
-
-  // 1) マウント時：復元フラグがあれば「並び」を先に復元、なければランダム
+  // 初回マウント時：戻る(bfcache/back_forward)なら「何もしない」
   useEffect(() => {
-    // iOSの戻ると競合しないように
+    // iOSの“戻る”で scroll を勝手に変えないように manual
     try {
       if ("scrollRestoration" in window.history) {
         window.history.scrollRestoration = "manual";
       }
     } catch {}
 
-    const shouldRestore = readRestoreFlag();
-    if (shouldRestore) {
-      setIsRestoring(true);
-      const saved = readSavedOrder();
-      const restored = saved ? buildWorksBySlugs(saved) : null;
-      if (restored) {
-        setFeaturedWorks(restored);
-      } else {
-        // 何かおかしい時は通常運転へ
-        setFeaturedWorks(pickFeaturedRandomStrong());
-        consumeRestoreFlag();
-        setIsRestoring(false);
-      }
-      return;
+    const navType = getNavType();
+    const isBackForward = navType === "back_forward";
+
+    // ✅ 戻る時はランダム禁止（ここが最重要）
+    if (!isBackForward) {
+      setFeaturedWorks(pickFeaturedRandomStrong());
     }
 
-    // 通常訪問：ランダム
-    setFeaturedWorks(pickFeaturedRandomStrong());
-  }, []);
+    // iOSの右スワイプ戻る(bfcache)で効く：pageshowで復元
+    const onPageShow = (e: PageTransitionEvent) => {
+      // persisted = bfcache 復帰
+      const shouldRestore = e.persisted || consumeRestoreFlag();
+      if (!shouldRestore) return;
 
-  // 2) 復元時：並びが入った「後」にスクロール復元
-  useEffect(() => {
-    if (!isRestoring) return;
+      const y = readSavedScrollY();
 
-    const y = readSavedScrollY();
+      // 画像/レイアウト確定待ちで複数回
+      requestAnimationFrame(() => window.scrollTo(0, y));
+      setTimeout(() => window.scrollTo(0, y), 0);
+      setTimeout(() => window.scrollTo(0, y), 80);
+      setTimeout(() => window.scrollTo(0, y), 200);
+    };
 
-    // 1フレーム待ってから戻す（画像の高さ確定待ち）
-    requestAnimationFrame(() => window.scrollTo(0, y));
-    // iOS対策で念押し
-    setTimeout(() => window.scrollTo(0, y), 0);
-    setTimeout(() => window.scrollTo(0, y), 60);
-
-    consumeRestoreFlag();
-    setIsRestoring(false);
-  }, [isRestoring, featuredWorks]);
-
-  // hover判定（あなたはhover不要と言っていたので、今後消してもOK）
-  const [canHover, setCanHover] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
-    const update = () => setCanHover(mq.matches);
-    update();
-    mq.addEventListener?.("change", update);
-    return () => mq.removeEventListener?.("change", update);
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
   }, []);
 
   return (
@@ -169,8 +126,8 @@ export default function HomePage() {
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
                     href={`/p/${w.slug}`}
-                    // 遷移前に「スクロール + 並び」を保存
-                    onClick={() => saveHomeState(featuredWorks.map((x) => x.slug))}
+                    // ✅ 詳細へ行く直前に「戻り復元フラグ + scrollY」を保存
+                    onClick={() => markRestore()}
                     className="featuredTile"
                     style={{
                       position: "relative",
@@ -178,14 +135,12 @@ export default function HomePage() {
                       overflow: "hidden",
                       borderRadius: 0,
                       border: "1px solid rgba(255,255,255,0.10)",
-                      transform: canHover ? "translateZ(0)" : undefined,
                     }}
                   >
                     <div className="featuredFrame">
                       <img
                         src={w.image}
                         alt={w.title ?? w.slug}
-                        className="featuredImg"
                         style={{
                           width: "100%",
                           height: "100%",
@@ -216,20 +171,17 @@ export default function HomePage() {
             .heroMinimal{
               padding: 78px 0 18px;
             }
-
             .featuredGrid{
               display:grid;
               grid-template-columns: repeat(2, minmax(0,1fr));
               gap: 12px;
             }
-
             @media (min-width: 920px){
               .featuredGrid{
                 grid-template-columns: repeat(4, minmax(0,1fr));
                 gap: 14px;
               }
             }
-
             .featuredFrame{
               width: 100%;
               aspect-ratio: 9 / 16;
