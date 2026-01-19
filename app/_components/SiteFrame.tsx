@@ -70,11 +70,6 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
                 </span>
               )}
             </Link>
-
-            {/* トップ内ギャラリーへ */}
-            <Link className="btn btnPrimary" href="/#gallery">
-              作品を見る
-            </Link>
           </nav>
         </div>
       </header>
@@ -85,16 +80,10 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
         <div className="container">
           <div className="footerTop">
             <div>
-              {/* ✅ Remember 復活 */}
+              {/* Remember（そのまま） */}
               <div className="kicker">Remember</div>
               <div style={{ fontSize: 18, fontWeight: 500, marginTop: 10 }}>
                 必要なときだけ、思い出してください。
-              </div>
-
-              <div className="btnRow" style={{ marginTop: 18 }}>
-                <Link className="btn btnPrimary" href="/#gallery">
-                  作品を見る
-                </Link>
               </div>
             </div>
 
