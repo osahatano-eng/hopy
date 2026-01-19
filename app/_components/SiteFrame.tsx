@@ -28,9 +28,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
           </Link>
 
           <nav className="navLinks" style={{ alignItems: "center" }}>
-            <Link className="navLink" href="/works">
-              Works
-            </Link>
+            {/* Worksページは使わないので導線を消す */}
             <Link className="navLink" href="/license">
               License
             </Link>
@@ -38,6 +36,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
               Contact
             </Link>
 
+            {/* お気に入り：♡ + 数字バッジ */}
             <Link
               className="btn"
               href="/favorites"
@@ -73,7 +72,8 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
               )}
             </Link>
 
-            <Link className="btn btnPrimary" href="/works">
+            {/* 「作品を見る」＝トップ内ギャラリーへスクロール */}
+            <Link className="btn btnPrimary" href="/#gallery">
               作品を見る
             </Link>
           </nav>
@@ -86,12 +86,13 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
         <div className="container">
           <div className="footerTop">
             <div>
-              <div className="kicker">Remember</div>
+              <div className="kicker">AI VISUAL STUDIO</div>
               <div style={{ fontSize: 18, fontWeight: 500, marginTop: 10 }}>
-                必要なときだけ、思い出してください。
+                Silent Start
               </div>
+
               <div className="btnRow" style={{ marginTop: 18 }}>
-                <Link className="btn btnPrimary" href="/works">
+                <Link className="btn btnPrimary" href="/#gallery">
                   作品を見る
                 </Link>
               </div>
@@ -114,6 +115,20 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
           <div className="footerBigBrand" aria-label="HOPY AI">
             HOPY AI
           </div>
+
+          <style>{`
+            .footerBigBrand{
+              margin-top: 50px;
+              width: 100%;
+              color: #fff;
+              font-weight: 700;
+              letter-spacing: 0.06em;
+              line-height: 1;
+              font-size: clamp(78px, 18vw, 300px);
+              display: block;
+              text-align: center;
+            }
+          `}</style>
         </div>
       </footer>
     </>
