@@ -28,7 +28,6 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
           </Link>
 
           <nav className="navLinks" style={{ alignItems: "center" }}>
-            {/* Worksページは使わないので導線を消す */}
             <Link className="navLink" href="/license">
               License
             </Link>
@@ -72,7 +71,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
               )}
             </Link>
 
-            {/* 「作品を見る」＝トップ内ギャラリーへスクロール */}
+            {/* トップ内ギャラリーへ */}
             <Link className="btn btnPrimary" href="/#gallery">
               作品を見る
             </Link>
@@ -86,9 +85,10 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
         <div className="container">
           <div className="footerTop">
             <div>
-              <div className="kicker">AI VISUAL STUDIO</div>
+              {/* ✅ Remember 復活 */}
+              <div className="kicker">Remember</div>
               <div style={{ fontSize: 18, fontWeight: 500, marginTop: 10 }}>
-                Silent Start
+                必要なときだけ、思い出してください。
               </div>
 
               <div className="btnRow" style={{ marginTop: 18 }}>
