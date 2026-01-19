@@ -133,32 +133,6 @@ export default function HomePage() {
             }
           `}</style>
         </section>
-
-        {/* 仕様説明（簡易）— フッター直前 */}
-        <section className="section" style={{ paddingTop: 0, paddingBottom: 70 }}>
-          <div className="container">
-            <hr className="hr" />
-            <div style={{ marginTop: 26 }}>
-              <div className="kicker">Specs</div>
-              <div style={{ marginTop: 10 }} className="sub">
-                すべて <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>9:16 / 1080×1920</strong>。
-                <br />
-                購入後すぐにダウンロード。静止画を起点に、あなたの編集で映像へ。
-                <br />
-                タイトルを固定しないのは、受け取った人の想像が完成する設計のため。
-              </div>
-
-              <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <Link className="btn btnPrimary" href="/favorites">
-                  ♡お気に入りを見る
-                </Link>
-                <Link className="btn" href="/license">
-                  License
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
     </SiteFrame>
   );
