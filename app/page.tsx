@@ -10,8 +10,8 @@ const PAGE_SIZE = 20;
 
 function sortWorksStable() {
   // 販売中を先頭へ（それ以外はWORKSの順序を維持）
-  const sellable = WORKS.filter((w) => Boolean((w as any).stripePriceId));
-  const others = WORKS.filter((w) => !Boolean((w as any).stripePriceId));
+  const sellable = WORKS.filter((w: any) => Boolean(w.stripePriceId));
+  const others = WORKS.filter((w: any) => !Boolean(w.stripePriceId));
   return [...sellable, ...others];
 }
 
@@ -36,8 +36,7 @@ export default function HomePage() {
         {/* Gallery */}
         <section className="section" id="gallery" style={{ paddingTop: 18 }}>
           <div className="container">
-            {/* グリッド（9:16のまま。hover演出なし） */}
-            <div className="featuredGrid" style={{ marginTop: 0 }}>
+            <div className="featuredGridResponsive">
               {shown.map((w: any) => (
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
@@ -51,15 +50,7 @@ export default function HomePage() {
                       border: "1px solid rgba(255,255,255,0.10)",
                     }}
                   >
-                    <div
-                      className="featuredFrame"
-                      style={{
-                        width: "100%",
-                        aspectRatio: "9 / 16",
-                        overflow: "hidden",
-                        background: "rgba(242,242,242,0.05)",
-                      }}
-                    >
+                    <div className="featuredFrame">
                       <img
                         src={w.image}
                         alt={w.title ?? w.slug}
@@ -89,9 +80,23 @@ export default function HomePage() {
               ))}
             </div>
 
+            {/* 表示数カウンタ */}
+            <div
+              style={{
+                marginTop: 14,
+                display: "flex",
+                justifyContent: "center",
+                fontSize: 12,
+                color: "rgba(242,242,242,0.65)",
+                letterSpacing: "0.08em",
+              }}
+            >
+              {Math.min(visible, allWorks.length)}/{allWorks.length}
+            </div>
+
             {/* More */}
             {hasMore && (
-              <div style={{ marginTop: 18, display: "flex", justifyContent: "center" }}>
+              <div style={{ marginTop: 10, display: "flex", justifyContent: "center" }}>
                 <button
                   className="btn"
                   type="button"
@@ -103,6 +108,30 @@ export default function HomePage() {
               </div>
             )}
           </div>
+
+          <style>{`
+            /* スマホ：2列 */
+            .featuredGridResponsive{
+              display:grid;
+              grid-template-columns: repeat(2, minmax(0,1fr));
+              gap: 12px;
+            }
+
+            /* PC：4列 */
+            @media (min-width: 920px){
+              .featuredGridResponsive{
+                grid-template-columns: repeat(4, minmax(0,1fr));
+                gap: 14px;
+              }
+            }
+
+            .featuredFrame{
+              width: 100%;
+              aspect-ratio: 9 / 16;
+              overflow: hidden;
+              background: rgba(242,242,242,0.05);
+            }
+          `}</style>
         </section>
 
         {/* 仕様説明（簡易）— フッター直前 */}
@@ -111,7 +140,7 @@ export default function HomePage() {
             <hr className="hr" />
             <div style={{ marginTop: 26 }}>
               <div className="kicker">Specs</div>
-              <div style={{ marginTop: 10, color: "rgba(242,242,242,0.72)", lineHeight: 1.9, fontSize: 13 }}>
+              <div style={{ marginTop: 10 }} className="sub">
                 すべて <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>9:16 / 1080×1920</strong>。
                 <br />
                 購入後すぐにダウンロード。静止画を起点に、あなたの編集で映像へ。
@@ -130,8 +159,6 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
-        {/* heroMinimal のページ内CSSは “削除” 指示なので、ここでは何も書かない */}
       </main>
     </SiteFrame>
   );
