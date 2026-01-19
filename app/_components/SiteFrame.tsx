@@ -77,105 +77,124 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
       {children}
 
 
-{/* ✅ Info Strip（全ページ共通・フッター直前） */}
-<section className="legalStrip" aria-label="Specs and license summary">
+{/* ✅ Specs / Info Strip */}
+<section className="specStrip" aria-label="Product specs and license summary">
   <div className="container">
-    <div className="legalBox">
-      <div className="legalEn">
-        <div className="legalLine">Format: PNG / 1080 × 1920 / 9:16</div>
-        <div className="legalLine">No watermark. Commercial use allowed.</div>
-        <div className="legalLine">Redistribution and resale are prohibited.</div>
-        <div className="legalNote">
+    <div className="specBox">
+      {/* English */}
+      <div className="specCol">
+        <div className="specLine">PNG format</div>
+        <div className="specLine">1080 × 1920</div>
+        <div className="specLine">9:16 aspect ratio</div>
+
+        <div className="specGap" />
+
+        <div className="specLine">No watermark</div>
+        <div className="specLine">Commercial use allowed</div>
+        <div className="specLine">Redistribution prohibited</div>
+
+        <div className="specNote">
           Please review the{" "}
-          <Link href="/terms">Terms</Link> &amp;{" "}
-          <Link href="/tokushoho">Legal Notice</Link> before purchasing.
+          <Link href="/terms">Terms</Link> &{" "}
+          <Link href="/license">License</Link> before purchasing.
         </div>
       </div>
 
-      <div className="legalSep" aria-hidden="true" />
+      <div className="specSep" aria-hidden="true" />
 
-      <div className="legalJa">
-        <div className="legalLine">形式：PNG / 解像度：1080 × 1920（9:16）</div>
-        <div className="legalLine">クレジット表記不要・商用利用可</div>
-        <div className="legalLine">再配布・転売は禁止</div>
-        <div className="legalNote">
+      {/* Japanese */}
+      <div className="specCol">
+        <div className="specLine">形式：PNG</div>
+        <div className="specLine">解像度：1080 × 1920</div>
+        <div className="specLine">比率：9:16</div>
+
+        <div className="specGap" />
+
+        <div className="specLine">クレジット表記不要</div>
+        <div className="specLine">商用利用可</div>
+        <div className="specLine">再配布・転売は禁止</div>
+
+        <div className="specNote">
           ご購入前に「<Link href="/terms">利用規約</Link>」「
-          <Link href="/tokushoho">特商法表記</Link>」をご確認ください。
+          <Link href="/license">ライセンス</Link>」をご確認ください。
         </div>
       </div>
     </div>
   </div>
 
   <style>{`
-    .legalStrip{
-      padding: 54px 0 36px;
+    .specStrip{
+      padding: 56px 0 36px;
     }
-    .legalBox{
+
+    .specBox{
       border-top: 1px solid var(--hairline);
       padding-top: 22px;
       display: grid;
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 18px;
     }
 
     @media (min-width: 820px){
-      .legalBox{
+      .specBox{
         grid-template-columns: 1fr auto 1fr;
-        align-items: start;
-        gap: 18px;
+        gap: 22px;
       }
     }
 
-    .legalSep{
-      display: none;
-    }
-    @media (min-width: 820px){
-      .legalSep{
-        display: block;
-        width: 1px;
-        height: 100%;
-        background: rgba(242,242,242,0.10);
-        margin-top: 2px;
-      }
-    }
-
-    .legalEn, .legalJa{
+    .specCol{
       color: rgba(242,242,242,0.62);
       font-size: 12px;
-      line-height: 1.8;
+      line-height: 1.9;
       letter-spacing: 0.02em;
     }
 
-    .legalLine{
+    .specLine{
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    /* モバイルは折り返し許可（はみ出し防止） */
-    @media (max-width: 819px){
-      .legalLine{
-        white-space: normal;
+    .specGap{
+      height: 10px;
+    }
+
+    .specSep{
+      display: none;
+    }
+
+    @media (min-width: 820px){
+      .specSep{
+        display: block;
+        width: 1px;
+        background: rgba(242,242,242,0.10);
       }
     }
 
-    .legalNote{
-      margin-top: 10px;
+    .specNote{
+      margin-top: 12px;
       color: rgba(242,242,242,0.52);
       font-size: 12px;
       line-height: 1.9;
     }
 
-    .legalNote a{
+    .specNote a{
       color: rgba(242,242,242,0.82);
       border-bottom: 1px solid rgba(242,242,242,0.20);
       padding-bottom: 2px;
     }
-    .legalNote a:hover{
+
+    .specNote a:hover{
       border-bottom-color: rgba(242,242,242,0.38);
+    }
+
+    /* モバイルでは自然に折り返し */
+    @media (max-width: 819px){
+      .specLine{
+        white-space: normal;
+      }
     }
   `}</style>
 </section>
+
 
 
       <footer className="footer">
