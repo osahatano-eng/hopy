@@ -1,60 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import SiteFrame from "@/app/_components/SiteFrame";
 import { WORKS } from "@/lib/works";
 import FavoriteButton from "@/app/_components/FavoriteButton";
 
-/** ★ここを書き換えるだけで並び替え（最大12） */
-const HOME_FIXED_IDS = [
-  "949vogeu",
-  "37z1mdu6",
-  "0xl7t7xl",
-  "8a24swce",
-  "hty8ut3e",
-  "up73h59u",
-  "y8durmct",
-  "e1c8e0le",
-  "3nrqtvl7",
-  "r8gor02s",
-  "7yknd8pc",
-  "g4tywz0w",
-  // ここに8桁IDを並べる
-];
+const PAGE_SIZE = 20;
 
-function pickHomeByIds(ids: string[]) {
-  const map = new Map(WORKS.map((w: any) => [w.slug, w]));
-  const picked: any[] = [];
-
-  for (const id of ids) {
-    const w = map.get(id);
-    if (w) picked.push(w);
-    if (picked.length >= 12) break;
-  }
-
-  return picked;
+function sortWorksStable() {
+  // 販売中を先頭へ（それ以外はWORKSの順序を維持）
+  const sellable = WORKS.filter((w) => Boolean((w as any).stripePriceId));
+  const others = WORKS.filter((w) => !Boolean((w as any).stripePriceId));
+  return [...sellable, ...others];
 }
 
 export default function HomePage() {
-  const fixedWorks = useMemo(() => pickHomeByIds(HOME_FIXED_IDS), []);
+  const allWorks = useMemo(() => sortWorksStable(), []);
+  const [visible, setVisible] = useState(PAGE_SIZE);
+
+  const shown = allWorks.slice(0, visible);
+  const hasMore = visible < allWorks.length;
 
   return (
     <SiteFrame>
       <main>
-        {/* Hero：class だけ残す（余白は globals.css で制御） */}
-        <section className="heroMinimal">
+        {/* Hero（残す：AI VISUAL STUDIO / Silent Start） */}
+        <section className="hero heroMinimal">
           <div className="container">
             <div className="kicker">AI VISUAL STUDIO</div>
             <h1 className="h1">Silent Start</h1>
           </div>
         </section>
 
-        {/* 画像グリッド（無言・固定12） */}
-        <section className="section" style={{ paddingTop: 22 }}>
+        {/* Gallery */}
+        <section className="section" id="gallery" style={{ paddingTop: 18 }}>
           <div className="container">
-            <div className="featuredGrid">
-              {fixedWorks.map((w: any) => (
+            {/* グリッド（9:16のまま。hover演出なし） */}
+            <div className="featuredGrid" style={{ marginTop: 0 }}>
+              {shown.map((w: any) => (
                 <div key={w.slug} style={{ position: "relative" }}>
                   <Link
                     href={`/p/${w.slug}`}
@@ -67,10 +51,18 @@ export default function HomePage() {
                       border: "1px solid rgba(255,255,255,0.10)",
                     }}
                   >
-                    <div className="featuredFrame">
+                    <div
+                      className="featuredFrame"
+                      style={{
+                        width: "100%",
+                        aspectRatio: "9 / 16",
+                        overflow: "hidden",
+                        background: "rgba(242,242,242,0.05)",
+                      }}
+                    >
                       <img
                         src={w.image}
-                        alt={w.slug}
+                        alt={w.title ?? w.slug}
                         style={{
                           width: "100%",
                           height: "100%",
@@ -81,7 +73,7 @@ export default function HomePage() {
                     </div>
                   </Link>
 
-                  {/* 右上：お気に入り（押してもリンクへ飛ばない） */}
+                  {/* 右上：お気に入り（リンクへ飛ばない） */}
                   <div
                     style={{ position: "absolute", top: 10, right: 10, zIndex: 3 }}
                     onClick={(e) => {
@@ -96,31 +88,50 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+
+            {/* More */}
+            {hasMore && (
+              <div style={{ marginTop: 18, display: "flex", justifyContent: "center" }}>
+                <button
+                  className="btn"
+                  type="button"
+                  onClick={() => setVisible((v) => Math.min(v + PAGE_SIZE, allWorks.length))}
+                  aria-label="More"
+                >
+                  More
+                </button>
+              </div>
+            )}
           </div>
-
-          {/* ▼ 注意：ここには .heroMinimal のCSSは置かない（競合防止） */}
-          <style>{`
-            .featuredGrid{
-              display:grid;
-              grid-template-columns: repeat(2, minmax(0,1fr));
-              gap: 12px;
-            }
-
-            @media (min-width: 920px){
-              .featuredGrid{
-                grid-template-columns: repeat(4, minmax(0,1fr));
-                gap: 14px;
-              }
-            }
-
-            .featuredFrame{
-              width: 100%;
-              aspect-ratio: 9 / 16;
-              overflow: hidden;
-              background: rgba(242,242,242,0.05);
-            }
-          `}</style>
         </section>
+
+        {/* 仕様説明（簡易）— フッター直前 */}
+        <section className="section" style={{ paddingTop: 0, paddingBottom: 70 }}>
+          <div className="container">
+            <hr className="hr" />
+            <div style={{ marginTop: 26 }}>
+              <div className="kicker">Specs</div>
+              <div style={{ marginTop: 10, color: "rgba(242,242,242,0.72)", lineHeight: 1.9, fontSize: 13 }}>
+                すべて <strong style={{ color: "rgba(242,242,242,0.9)", fontWeight: 500 }}>9:16 / 1080×1920</strong>。
+                <br />
+                購入後すぐにダウンロード。静止画を起点に、あなたの編集で映像へ。
+                <br />
+                タイトルを固定しないのは、受け取った人の想像が完成する設計のため。
+              </div>
+
+              <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <Link className="btn btnPrimary" href="/favorites">
+                  ♡お気に入りを見る
+                </Link>
+                <Link className="btn" href="/license">
+                  License
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* heroMinimal のページ内CSSは “削除” 指示なので、ここでは何も書かない */}
       </main>
     </SiteFrame>
   );
