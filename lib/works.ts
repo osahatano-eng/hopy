@@ -6,6 +6,9 @@ export type Work = WorkBase & {
   title?: string;
   genre?: string;
 
+  // ★追加：シリーズ（Netflix行のキー用）
+  series?: string;
+
   // 既存のメタ（売る情報）
   price?: number;
   stripePriceId?: string;
