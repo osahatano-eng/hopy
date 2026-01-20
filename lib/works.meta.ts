@@ -11,6 +11,7 @@ export const WORKS_META: Record<
     size?: string;
     tags?: string[];
     video?: string;
+    series?: string; // ★追加
   }
 > = {
   "y8durmct": {
@@ -37,6 +38,7 @@ export const WORKS_META: Record<
     title: "m48opy86",
     price: 390,
     stripePriceId: "price_1Sq1RsPdHZWs1X17BtwNxk9e",
+    series: "dino";
   },
     "wq7iwwsu": {
     title: "wq7iwwsu",
@@ -62,6 +64,7 @@ export const WORKS_META: Record<
     title: "37z1mdu6",
     price: 390,
     stripePriceId: "price_1SqILmPdHZWs1X17Vs8cl2He",
+    series: "dino";
   },
    "6fapbktp": {
     title: "6fapbktp",
@@ -112,6 +115,7 @@ export const WORKS_META: Record<
     title: "949vogeu",
     price: 390,
     stripePriceId: "price_1SqlwoPdHZWs1X17IqzRamnd",
+    series: "dino";
   },
    "ghlktp23": {
     title: "ghlktp23",
@@ -134,6 +138,7 @@ export const WORKS_META: Record<
     stripePriceId: "price_1SrZ7JPdHZWs1X17wJKXOBgn",
   },
 } as const;
+
 
 
 
