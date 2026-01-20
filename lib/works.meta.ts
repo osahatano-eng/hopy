@@ -24,7 +24,6 @@ export const WORKS_META: Record<
     title: "g4tywz0w",
     price: 390,
     stripePriceId: "price_1SovAMPdHZWs1X17DxvgZ1Fg",
-    series: "",
   },
   "5wf7bntd": {
     title: "5wf7bntd",
@@ -36,8 +35,7 @@ export const WORKS_META: Record<
     title: "r4xva4g5",
     price: 390,
     stripePriceId: "price_1SppcgPdHZWs1X17LXQzU1S9",
-    series: "",
-  };
+  },
     "m48opy86": {
     title: "m48opy86",
     price: 390,
@@ -48,7 +46,6 @@ export const WORKS_META: Record<
     title: "wq7iwwsu",
     price: 390,
     stripePriceId: "price_1Sq1X6PdHZWs1X17EI6RV9LG",
-    series: "",
   },
    "e1c8e0le": {
     title: "e1c8e0le",
@@ -60,7 +57,6 @@ export const WORKS_META: Record<
     title: "r8gor02s",
     price: 390,
     stripePriceId: "price_1Sq6IGPdHZWs1X17cZVxkrMB",
-    series: "",
   },
    "3nrqtvl7": {
     title: "3nrqtvl7",
@@ -159,6 +155,7 @@ export const WORKS_META: Record<
     series: "f100",
   },
 } as const;
+
 
 
 
