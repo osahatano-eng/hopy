@@ -5,6 +5,7 @@ import SiteFrame from "@/app/_components/SiteFrame";
 import VideoPreview916 from "@/app/_components/VideoPreview916";
 import FavoriteButton from "@/app/_components/FavoriteButton";
 import BuyNowClient from "@/app/_components/BuyNowClient";
+import ForceTopOnMount from "@/app/_components/ForceTopOnMount";
 
 
 type Params = { slug: string };
@@ -20,6 +21,7 @@ export default async function ProductPage({ params }: Props) {
   return (
     <SiteFrame>
       <main>
+        <ForceTopOnMount />
         <section className="section" style={{ paddingTop: 44 }}>
           <div className="container">
             <div style={{ marginBottom: 16 }}>
@@ -225,6 +227,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
