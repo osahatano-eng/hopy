@@ -18,22 +18,25 @@ export const WORKS_META: Record<
     title: "y8durmct",
     price: 390,
     stripePriceId: "price_1Sov8RPdHZWs1X17dIDyEZPm",
+    series: "bronco";
   },
   "g4tywz0w": {
     title: "g4tywz0w",
     price: 390,
     stripePriceId: "price_1SovAMPdHZWs1X17DxvgZ1Fg",
+    series: "bronco";
   },
   "5wf7bntd": {
     title: "5wf7bntd",
     price: 390,
     stripePriceId: "price_1SpngjPdHZWs1X17VuKOI5td",
+    series: "moto";
   },
-    "r4xva4g5": {
-    title: "r4xva4g5",
-    price: 390,
-    stripePriceId: "price_1SppcgPdHZWs1X17LXQzU1S9",
-  },
+   // "r4xva4g5": {
+    //title: "r4xva4g5",
+    //price: 390,
+    //stripePriceId: "price_1SppcgPdHZWs1X17LXQzU1S9",
+  //},
     "m48opy86": {
     title: "m48opy86",
     price: 390,
@@ -49,6 +52,7 @@ export const WORKS_META: Record<
     title: "e1c8e0le",
     price: 390,
     stripePriceId: "price_1Sq6EhPdHZWs1X17vK86Tq9a",
+    series: "bronco";
   },
    "r8gor02s": {
     title: "r8gor02s",
@@ -59,6 +63,7 @@ export const WORKS_META: Record<
     title: "3nrqtvl7",
     price: 390,
     stripePriceId: "price_1SqEGWPdHZWs1X177PmgDQnM",
+    series: "bronco";
   },
    "37z1mdu6": {
     title: "37z1mdu6",
@@ -100,6 +105,7 @@ export const WORKS_META: Record<
     title: "hlzcq1o6",
     price: 390,
     stripePriceId: "price_1SqiBlPdHZWs1X17BKA5FDzA",
+    series: "moto";
   },
    "7yknd8pc": {
     title: "7yknd8pc",
@@ -150,6 +156,7 @@ export const WORKS_META: Record<
     series: "f100";
   },
 } as const;
+
 
 
 
