@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { FAVORITES_EVENT, favoritesCount } from "@/app/_lib/favorites";
 
@@ -12,38 +12,66 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [count, setCount] = useState(0);
 
+  // popstate（戻る/進む）の時だけ復元するためのフラグ
+  const poppedRef = useRef(false);
+
   // =========================
-  // ✅ Scroll Restoration（戻る/進むで元位置へ）
-  // - URL（pathname）ごとに scrollY を保存
-  // - popstate（戻る/進む）で復元
+  // ✅ popstate検知（戻る/進む）
   // =========================
   useEffect(() => {
-    // 保存（スクロールのたびに）
+    const onPopState = () => {
+      poppedRef.current = true;
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  // =========================
+  // ✅ Scroll position save
+  // =========================
+  useEffect(() => {
     const save = () => {
       try {
         sessionStorage.setItem(`scroll:${pathname}`, String(window.scrollY));
       } catch {}
     };
+    window.addEventListener("scroll", save, { passive: true });
+    return () => window.removeEventListener("scroll", save);
+  }, [pathname]);
 
-    // 復元（戻る/進むのときだけ）
-    const onPopState = () => {
+  // =========================
+  // ✅ Route change handling
+  // - 戻る/進む(popstate) の時だけ復元
+  // - 通常遷移の時は 先頭へ
+  //   （詳細ページが途中から始まる問題を潰す）
+  // =========================
+  useEffect(() => {
+    // ルートが変わった瞬間に評価
+    const isDetail = pathname.startsWith("/p/");
+
+    // ✅ 戻る/進むのとき：保存位置へ
+    if (poppedRef.current) {
+      poppedRef.current = false;
       try {
         const y = sessionStorage.getItem(`scroll:${pathname}`);
         if (y) {
-          requestAnimationFrame(() => {
-            window.scrollTo(0, Number(y));
-          });
+          requestAnimationFrame(() => window.scrollTo(0, Number(y)));
+          return;
         }
       } catch {}
-    };
+      // 保存がなければ先頭
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+      return;
+    }
 
-    window.addEventListener("scroll", save, { passive: true });
-    window.addEventListener("popstate", onPopState);
+    // ✅ 通常遷移：詳細ページは必ず先頭にする
+    if (isDetail) {
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+      return;
+    }
 
-    return () => {
-      window.removeEventListener("scroll", save);
-      window.removeEventListener("popstate", onPopState);
-    };
+    // ✅ 通常遷移：それ以外も基本先頭
+    requestAnimationFrame(() => window.scrollTo(0, 0));
   }, [pathname]);
 
   // =========================
@@ -224,7 +252,6 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
             border-bottom-color: rgba(242,242,242,0.38);
           }
 
-          /* モバイルでは自然に折り返し */
           @media (max-width: 819px){
             .specLine{
               white-space: normal;
@@ -237,7 +264,6 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
         <div className="container">
           <div className="footerTop">
             <div>
-              {/* Remember（そのまま） */}
               <div className="kicker">Remember</div>
               <div style={{ fontSize: 18, fontWeight: 500, marginTop: 10 }}>
                 必要なときだけ、思い出してください。
