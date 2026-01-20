@@ -70,26 +70,31 @@ export const WORKS_META: Record<
     title: "6fapbktp",
     price: 390,
     stripePriceId: "price_1SqIVZPdHZWs1X17zUGPqODB",
+    series: "gt350h";
   },
    "0vy0bibt": {
     title: "0vy0bibt",
     price: 390,
     stripePriceId: "price_1Sqgq1PdHZWs1X17pZbh2Up1",
+    series: "gt350h";
   },
    "r6qvrdxz": {
     title: "r6qvrdxz",
     price: 390,
     stripePriceId: "price_1SqhOVPdHZWs1X17S1ybJm4l",
+    series: "964";
   },
    "8a24swce": {
     title: "8a24swce",
     price: 390,
     stripePriceId: "price_1SqhcuPdHZWs1X17iZFHYABS",
+    series: "964";
   },
    "0xl7t7xl": {
     title: "0xl7t7xl",
     price: 390,
     stripePriceId: "price_1SqhlOPdHZWs1X17ecwjrClm",
+    series: "964";
   },
    "hlzcq1o6": {
     title: "hlzcq1o6",
@@ -100,16 +105,19 @@ export const WORKS_META: Record<
     title: "7yknd8pc",
     price: 390,
     stripePriceId: "price_1SqjJVPdHZWs1X17pKsF5Hoz",
+    series: "f100";
   },
    "hty8ut3e": {
     title: "hty8ut3e",
     price: 390,
     stripePriceId: "price_1SqkO2PdHZWs1X173J2qNJts",
+    series: "gt350h";
   },
    "up73h59u": {
     title: "up73h59u",
     price: 390,
     stripePriceId: "price_1SqkvjPdHZWs1X17uNt2VbMF",
+    series: "gt350h";
   },
    "949vogeu": {
     title: "949vogeu",
@@ -121,23 +129,28 @@ export const WORKS_META: Record<
     title: "ghlktp23",
     price: 390,
     stripePriceId: "price_1SrJiKPdHZWs1X17yNQF1Ho7",
+    series: "f100";
   },
    "ofh3kwsi": {
     title: "ofh3kwsi",
     price: 390,
     stripePriceId: "price_1SrKjlPdHZWs1X17kchoefT2",
+    series: "f100";
   },
    "ggu21lkq": {
     title: "ggu21lkq",
     price: 390,
     stripePriceId: "price_1SrYfyPdHZWs1X17tS490P0i",
+    series: "f100";
   },
    "j0writd2": {
     title: "j0writd2",
     price: 390,
     stripePriceId: "price_1SrZ7JPdHZWs1X17wJKXOBgn",
+    series: "f100";
   },
 } as const;
+
 
 
 
