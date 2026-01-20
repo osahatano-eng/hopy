@@ -1,81 +1,79 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-const key = (p: string) => `hopy:scrollY:${p}`;
-const flag = (p: string) => `hopy:restore:${p}`;
-
+/**
+ * iOSの右スワイプ戻る / BFCache / Next.js遷移でも
+ * スクロール位置を sessionStorage に保存して復元する。
+ */
 export default function ScrollRestoration() {
-  const pathname = usePathname();
+  const keyRef = useRef<string>("");
 
   useEffect(() => {
-    // ブラウザ任せを切る
+    if (typeof window === "undefined") return;
+
+    // ブラウザ標準の復元は Next の挙動と競合しがちなので手動に
     try {
-      if ("scrollRestoration" in window.history) {
-        window.history.scrollRestoration = "manual";
-      }
+      window.history.scrollRestoration = "manual";
     } catch {}
 
-    // 常時保存（軽量）
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        ticking = false;
-        try {
-          sessionStorage.setItem(key(location.pathname), String(window.scrollY || 0));
-        } catch {}
-      });
+    const makeKey = () => {
+      // pathnameごとに保存（必要なら search も含める）
+      return `scroll:${window.location.pathname}`;
     };
 
-    const onPopState = () => {
+    const save = () => {
       try {
-        sessionStorage.setItem(flag(location.pathname), "1");
+        sessionStorage.setItem(makeKey(), String(window.scrollY || 0));
       } catch {}
     };
 
-    const onPageShow = (e: PageTransitionEvent) => {
-      if (e.persisted) {
-        try {
-          sessionStorage.setItem(flag(location.pathname), "1");
-        } catch {}
-      }
+    const restore = () => {
+      const k = makeKey();
+      keyRef.current = k;
+
+      let y = 0;
+      try {
+        y = Number(sessionStorage.getItem(k) ?? "0");
+      } catch {}
+
+      // 1回で効かない端末があるので、2フレーム＋少し遅延で押し切る
+      requestAnimationFrame(() => {
+        window.scrollTo(0, y);
+        requestAnimationFrame(() => window.scrollTo(0, y));
+        setTimeout(() => window.scrollTo(0, y), 80);
+      });
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("popstate", onPopState);
+    // 初回ロード時も復元（戻る直後もここを通ることが多い）
+    restore();
+
+    // 遷移前に保存（戻る用）
+    window.addEventListener("pagehide", save);
+    window.addEventListener("beforeunload", save);
+
+    // iOSのBFCache復帰で発火。persisted=true の時は特に重要
+    const onPageShow = (e: PageTransitionEvent) => {
+      if (e.persisted) restore();
+    };
     window.addEventListener("pageshow", onPageShow);
 
+    // スクロール中も定期保存（軽く）
+    let t: any;
+    const onScroll = () => {
+      clearTimeout(t);
+      t = setTimeout(save, 120);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("popstate", onPopState);
-      window.removeEventListener("pageshow", onPageShow);
+      window.removeEventListener("pagehide", save);
+      window.removeEventListener("beforeunload", save);
+      window.removeEventListener("pageshow", onPageShow as any);
+      window.removeEventListener("scroll", onScroll as any);
+      clearTimeout(t);
     };
   }, []);
-
-  // パス確定後に “戻り時だけ” 復元
-  useEffect(() => {
-    let should = false;
-    try {
-      should = sessionStorage.getItem(flag(pathname)) === "1";
-      if (should) sessionStorage.removeItem(flag(pathname));
-    } catch {}
-
-    if (!should) return;
-
-    let y = 0;
-    try {
-      const raw = sessionStorage.getItem(key(pathname));
-      y = raw ? Number(raw) : 0;
-    } catch {}
-
-    requestAnimationFrame(() => window.scrollTo(0, y));
-    setTimeout(() => window.scrollTo(0, y), 0);
-    setTimeout(() => window.scrollTo(0, y), 80);
-    setTimeout(() => window.scrollTo(0, y), 200);
-  }, [pathname]);
 
   return null;
 }
