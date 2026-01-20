@@ -209,6 +209,10 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
           scroll-snap-type: x mandatory;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: thin;
+          -ms-overflow-style: none;   /* IE/旧Edge */
+          scrollbar-width: none;
+          -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); 
         }
 
         .cardWrap{
