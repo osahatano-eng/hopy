@@ -47,6 +47,7 @@ export const WORKS_META: Record<
     title: "wq7iwwsu",
     price: 390,
     stripePriceId: "price_1Sq1X6PdHZWs1X17EI6RV9LG",
+    series: "other";
   },
    "e1c8e0le": {
     title: "e1c8e0le",
@@ -58,6 +59,7 @@ export const WORKS_META: Record<
     title: "r8gor02s",
     price: 390,
     stripePriceId: "price_1Sq6IGPdHZWs1X17cZVxkrMB",
+    series: "other";
   },
    "3nrqtvl7": {
     title: "3nrqtvl7",
@@ -156,6 +158,7 @@ export const WORKS_META: Record<
     series: "f100";
   },
 } as const;
+
 
 
 
