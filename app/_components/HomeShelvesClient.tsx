@@ -211,8 +211,20 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
           scrollbar-width: thin;
           -ms-overflow-style: none;   /* IE/旧Edge */
           scrollbar-width: none;
-          -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-          mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent); 
+          -webkit-mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 88%,
+    rgba(0,0,0,0.6) 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 0%,
+    #000 88%,
+    rgba(0,0,0,0.6) 94%,
+    transparent 100%
+  );
         }
 
         .cardWrap{
@@ -289,3 +301,4 @@ function Card({ w }: { w: WorkLite }) {
     </div>
   );
 }
+
