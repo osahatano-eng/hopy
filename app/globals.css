@@ -4,10 +4,14 @@
   --fg: #f2f2f2;
   --muted: rgba(242, 242, 242, 0.72);
   --hairline: rgba(242, 242, 242, 0.14);
+  --nav-h: 72px; /* 実際のheader高に合わせる */
 }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; }
+html {
+  scroll-padding-top: var(--nav-h);
+}
 body {
   margin: 0;
   background: radial-gradient(1200px 600px at 20% 10%, rgba(255,255,255,0.06), transparent 60%),
