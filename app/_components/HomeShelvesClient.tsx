@@ -281,10 +281,7 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
 function Card({ w }: { w: WorkLite }) {
   return (
     <div className="cardWrap">
-      <Link href={`/p/${w.slug}`}
-  scroll={false}
-  className="featuredTile"
-  aria-label={`Open ${w.slug}`}>
+      <Link href={`/p/${w.slug}`} className="featuredTile">
         <div className="frame">
           <img src={w.image} alt={w.slug} className="img" />
         </div>
@@ -304,6 +301,7 @@ function Card({ w }: { w: WorkLite }) {
     </div>
   );
 }
+
 
 
 
