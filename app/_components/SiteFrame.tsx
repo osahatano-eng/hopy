@@ -3,12 +3,46 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { FAVORITES_EVENT, favoritesCount } from "@/app/_lib/favorites";
 
 export default function SiteFrame({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
   const [mounted, setMounted] = useState(false);
   const [count, setCount] = useState(0);
 
+  // ============================
+  // ★ スクロール位置の保存
+  // ============================
+  useEffect(() => {
+    const save = () => {
+      sessionStorage.setItem(`scroll:${pathname}`, String(window.scrollY));
+    };
+    window.addEventListener("scroll", save);
+    return () => window.removeEventListener("scroll", save);
+  }, [pathname]);
+
+  // ============================
+  // ★ 戻る / 進む で復元
+  // ============================
+  useEffect(() => {
+    const onPopState = () => {
+      const y = sessionStorage.getItem(`scroll:${pathname}`);
+      if (y) {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, Number(y));
+        });
+      }
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [pathname]);
+
+  // ============================
+  // ★ お気に入りカウント同期
+  // ============================
   useEffect(() => {
     setMounted(true);
 
@@ -76,132 +110,127 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
 
       {children}
 
+      {/* ✅ Specs / Info Strip */}
+      <section className="specStrip" aria-label="Product specs and license summary">
+        <div className="container">
+          <div className="specBox">
+            {/* English */}
+            <div className="specCol">
+              <div className="specLine">PNG format</div>
+              <div className="specLine">1080 × 1920</div>
+              <div className="specLine">9:16 aspect ratio</div>
 
-{/* ✅ Specs / Info Strip */}
-<section className="specStrip" aria-label="Product specs and license summary">
-  <div className="container">
-    <div className="specBox">
-      {/* English */}
-      <div className="specCol">
-        <div className="specLine">PNG format</div>
-        <div className="specLine">1080 × 1920</div>
-        <div className="specLine">9:16 aspect ratio</div>
+              <div className="specGap" />
 
-        <div className="specGap" />
+              <div className="specLine">No watermark</div>
+              <div className="specLine">Commercial use allowed</div>
+              <div className="specLine">Redistribution prohibited</div>
 
-        <div className="specLine">No watermark</div>
-        <div className="specLine">Commercial use allowed</div>
-        <div className="specLine">Redistribution prohibited</div>
+              <div className="specNote">
+                Please review the{" "}
+                <Link href="/terms">Terms</Link> &{" "}
+                <Link href="/license">License</Link> before purchasing.
+              </div>
+            </div>
 
-        <div className="specNote">
-          Please review the{" "}
-          <Link href="/terms">Terms</Link> &{" "}
-          <Link href="/license">License</Link> before purchasing.
+            <div className="specSep" aria-hidden="true" />
+
+            {/* Japanese */}
+            <div className="specCol">
+              <div className="specLine">形式：PNG</div>
+              <div className="specLine">解像度：1080 × 1920</div>
+              <div className="specLine">比率：9:16</div>
+
+              <div className="specGap" />
+
+              <div className="specLine">クレジット表記不要</div>
+              <div className="specLine">商用利用可</div>
+              <div className="specLine">再配布・転売は禁止</div>
+
+              <div className="specNote">
+                ご購入前に「<Link href="/terms">利用規約</Link>」「
+                <Link href="/license">ライセンス</Link>」をご確認ください。
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="specSep" aria-hidden="true" />
+        <style>{`
+          .specStrip{
+            padding: 56px 0 36px;
+          }
 
-      {/* Japanese */}
-      <div className="specCol">
-        <div className="specLine">形式：PNG</div>
-        <div className="specLine">解像度：1080 × 1920</div>
-        <div className="specLine">比率：9:16</div>
+          .specBox{
+            border-top: 1px solid var(--hairline);
+            padding-top: 22px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+          }
 
-        <div className="specGap" />
+          @media (min-width: 820px){
+            .specBox{
+              grid-template-columns: 1fr auto 1fr;
+              gap: 22px;
+            }
+          }
 
-        <div className="specLine">クレジット表記不要</div>
-        <div className="specLine">商用利用可</div>
-        <div className="specLine">再配布・転売は禁止</div>
+          .specCol{
+            color: rgba(242,242,242,0.62);
+            font-size: 12px;
+            line-height: 1.9;
+            letter-spacing: 0.02em;
+          }
 
-        <div className="specNote">
-          ご購入前に「<Link href="/terms">利用規約</Link>」「
-          <Link href="/license">ライセンス</Link>」をご確認ください。
-        </div>
-      </div>
-    </div>
-  </div>
+          .specLine{
+            white-space: nowrap;
+          }
 
-  <style>{`
-    .specStrip{
-      padding: 56px 0 36px;
-    }
+          .specGap{
+            height: 10px;
+          }
 
-    .specBox{
-      border-top: 1px solid var(--hairline);
-      padding-top: 22px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-    }
+          .specSep{
+            display: none;
+          }
 
-    @media (min-width: 820px){
-      .specBox{
-        grid-template-columns: 1fr auto 1fr;
-        gap: 22px;
-      }
-    }
+          @media (min-width: 820px){
+            .specSep{
+              display: block;
+              width: 1px;
+              background: rgba(242,242,242,0.10);
+            }
+          }
 
-    .specCol{
-      color: rgba(242,242,242,0.62);
-      font-size: 12px;
-      line-height: 1.9;
-      letter-spacing: 0.02em;
-    }
+          .specNote{
+            margin-top: 12px;
+            color: rgba(242,242,242,0.52);
+            font-size: 12px;
+            line-height: 1.9;
+          }
 
-    .specLine{
-      white-space: nowrap;
-    }
+          .specNote a{
+            color: rgba(242,242,242,0.82);
+            border-bottom: 1px solid rgba(242,242,242,0.20);
+            padding-bottom: 2px;
+          }
 
-    .specGap{
-      height: 10px;
-    }
+          .specNote a:hover{
+            border-bottom-color: rgba(242,242,242,0.38);
+          }
 
-    .specSep{
-      display: none;
-    }
-
-    @media (min-width: 820px){
-      .specSep{
-        display: block;
-        width: 1px;
-        background: rgba(242,242,242,0.10);
-      }
-    }
-
-    .specNote{
-      margin-top: 12px;
-      color: rgba(242,242,242,0.52);
-      font-size: 12px;
-      line-height: 1.9;
-    }
-
-    .specNote a{
-      color: rgba(242,242,242,0.82);
-      border-bottom: 1px solid rgba(242,242,242,0.20);
-      padding-bottom: 2px;
-    }
-
-    .specNote a:hover{
-      border-bottom-color: rgba(242,242,242,0.38);
-    }
-
-    /* モバイルでは自然に折り返し */
-    @media (max-width: 819px){
-      .specLine{
-        white-space: normal;
-      }
-    }
-  `}</style>
-</section>
-
-
+          @media (max-width: 819px){
+            .specLine{
+              white-space: normal;
+            }
+          }
+        `}</style>
+      </section>
 
       <footer className="footer">
         <div className="container">
           <div className="footerTop">
             <div>
-              {/* Remember（そのまま） */}
               <div className="kicker">Remember</div>
               <div style={{ fontSize: 18, fontWeight: 500, marginTop: 10 }}>
                 必要なときだけ、思い出してください。
