@@ -1,7 +1,6 @@
 // app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
-import ScrollRestoration from "@/app/_components/ScrollRestoration";
 import ScrollManager from "@/app/_components/ScrollManager";
 
 export const metadata: Metadata = {
@@ -13,11 +12,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <body>
-<ScrollRestoration />
         <ScrollManager />
-{children}</body>
+        {children}
+      </body>
     </html>
   );
 }
-
-
