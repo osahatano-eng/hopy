@@ -20,7 +20,6 @@ export default async function ProductPage({ params }: Props) {
   return (
     <SiteFrame>
       <main>
-        <ForceTopOnMount />
         <section className="section" style={{ paddingTop: 44 }}>
           <div className="container">
             <div style={{ marginBottom: 16 }}>
@@ -226,6 +225,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
