@@ -18,19 +18,19 @@ export const WORKS_META: Record<
     title: "y8durmct",
     price: 390,
     stripePriceId: "price_1Sov8RPdHZWs1X17dIDyEZPm",
-    series: "bronco";
+    series: "bronco",
   },
   "g4tywz0w": {
     title: "g4tywz0w",
     price: 390,
     stripePriceId: "price_1SovAMPdHZWs1X17DxvgZ1Fg",
-    series: "bronco";
+    series: "bronco",
   },
   "5wf7bntd": {
     title: "5wf7bntd",
     price: 390,
     stripePriceId: "price_1SpngjPdHZWs1X17VuKOI5td",
-    series: "moto";
+    series: "moto",
   },
    // "r4xva4g5": {
     //title: "r4xva4g5",
@@ -41,123 +41,124 @@ export const WORKS_META: Record<
     title: "m48opy86",
     price: 390,
     stripePriceId: "price_1Sq1RsPdHZWs1X17BtwNxk9e",
-    series: "dino";
+    series: "dino",
   },
     "wq7iwwsu": {
     title: "wq7iwwsu",
     price: 390,
     stripePriceId: "price_1Sq1X6PdHZWs1X17EI6RV9LG",
-    series: "other";
+    series: "other",
   },
    "e1c8e0le": {
     title: "e1c8e0le",
     price: 390,
     stripePriceId: "price_1Sq6EhPdHZWs1X17vK86Tq9a",
-    series: "bronco";
+    series: "bronco",
   },
    "r8gor02s": {
     title: "r8gor02s",
     price: 390,
     stripePriceId: "price_1Sq6IGPdHZWs1X17cZVxkrMB",
-    series: "other";
+    series: "other",
   },
    "3nrqtvl7": {
     title: "3nrqtvl7",
     price: 390,
     stripePriceId: "price_1SqEGWPdHZWs1X177PmgDQnM",
-    series: "bronco";
+    series: "bronco",
   },
    "37z1mdu6": {
     title: "37z1mdu6",
     price: 390,
     stripePriceId: "price_1SqILmPdHZWs1X17Vs8cl2He",
-    series: "dino";
+    series: "dino",
   },
    "6fapbktp": {
     title: "6fapbktp",
     price: 390,
     stripePriceId: "price_1SqIVZPdHZWs1X17zUGPqODB",
-    series: "gt350h";
+    series: "gt350h",
   },
    "0vy0bibt": {
     title: "0vy0bibt",
     price: 390,
     stripePriceId: "price_1Sqgq1PdHZWs1X17pZbh2Up1",
-    series: "gt350h";
+    series: "gt350h",
   },
    "r6qvrdxz": {
     title: "r6qvrdxz",
     price: 390,
     stripePriceId: "price_1SqhOVPdHZWs1X17S1ybJm4l",
-    series: "964";
+    series: "964",
   },
    "8a24swce": {
     title: "8a24swce",
     price: 390,
     stripePriceId: "price_1SqhcuPdHZWs1X17iZFHYABS",
-    series: "964";
+    series: "964",
   },
    "0xl7t7xl": {
     title: "0xl7t7xl",
     price: 390,
     stripePriceId: "price_1SqhlOPdHZWs1X17ecwjrClm",
-    series: "964";
+    series: "964",
   },
    "hlzcq1o6": {
     title: "hlzcq1o6",
     price: 390,
     stripePriceId: "price_1SqiBlPdHZWs1X17BKA5FDzA",
-    series: "moto";
+    series: "moto",
   },
    "7yknd8pc": {
     title: "7yknd8pc",
     price: 390,
     stripePriceId: "price_1SqjJVPdHZWs1X17pKsF5Hoz",
-    series: "f100";
+    series: "f100",
   },
    "hty8ut3e": {
     title: "hty8ut3e",
     price: 390,
     stripePriceId: "price_1SqkO2PdHZWs1X173J2qNJts",
-    series: "gt350h";
+    series: "gt350h",
   },
    "up73h59u": {
     title: "up73h59u",
     price: 390,
     stripePriceId: "price_1SqkvjPdHZWs1X17uNt2VbMF",
-    series: "gt350h";
+    series: "gt350h",
   },
    "949vogeu": {
     title: "949vogeu",
     price: 390,
     stripePriceId: "price_1SqlwoPdHZWs1X17IqzRamnd",
-    series: "dino";
+    series: "dino",
   },
    "ghlktp23": {
     title: "ghlktp23",
     price: 390,
     stripePriceId: "price_1SrJiKPdHZWs1X17yNQF1Ho7",
-    series: "f100";
+    series: "f100",
   },
    "ofh3kwsi": {
     title: "ofh3kwsi",
     price: 390,
     stripePriceId: "price_1SrKjlPdHZWs1X17kchoefT2",
-    series: "f100";
+    series: "f100",
   },
    "ggu21lkq": {
     title: "ggu21lkq",
     price: 390,
     stripePriceId: "price_1SrYfyPdHZWs1X17tS490P0i",
-    series: "f100";
+    series: "f100",
   },
    "j0writd2": {
     title: "j0writd2",
     price: 390,
     stripePriceId: "price_1SrZ7JPdHZWs1X17wJKXOBgn",
-    series: "f100";
+    series: "f100",
   },
 } as const;
+
 
 
 
