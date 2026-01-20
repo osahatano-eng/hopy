@@ -12,37 +12,43 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [count, setCount] = useState(0);
 
-  // ============================
-  // ★ スクロール位置の保存
-  // ============================
+  // =========================
+  // ✅ Scroll Restoration（戻る/進むで元位置へ）
+  // - URL（pathname）ごとに scrollY を保存
+  // - popstate（戻る/進む）で復元
+  // =========================
   useEffect(() => {
+    // 保存（スクロールのたびに）
     const save = () => {
-      sessionStorage.setItem(`scroll:${pathname}`, String(window.scrollY));
+      try {
+        sessionStorage.setItem(`scroll:${pathname}`, String(window.scrollY));
+      } catch {}
     };
-    window.addEventListener("scroll", save);
-    return () => window.removeEventListener("scroll", save);
-  }, [pathname]);
 
-  // ============================
-  // ★ 戻る / 進む で復元
-  // ============================
-  useEffect(() => {
+    // 復元（戻る/進むのときだけ）
     const onPopState = () => {
-      const y = sessionStorage.getItem(`scroll:${pathname}`);
-      if (y) {
-        requestAnimationFrame(() => {
-          window.scrollTo(0, Number(y));
-        });
-      }
+      try {
+        const y = sessionStorage.getItem(`scroll:${pathname}`);
+        if (y) {
+          requestAnimationFrame(() => {
+            window.scrollTo(0, Number(y));
+          });
+        }
+      } catch {}
     };
 
+    window.addEventListener("scroll", save, { passive: true });
     window.addEventListener("popstate", onPopState);
-    return () => window.removeEventListener("popstate", onPopState);
+
+    return () => {
+      window.removeEventListener("scroll", save);
+      window.removeEventListener("popstate", onPopState);
+    };
   }, [pathname]);
 
-  // ============================
-  // ★ お気に入りカウント同期
-  // ============================
+  // =========================
+  // ✅ Favorites count
+  // =========================
   useEffect(() => {
     setMounted(true);
 
@@ -127,8 +133,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
               <div className="specLine">Redistribution prohibited</div>
 
               <div className="specNote">
-                Please review the{" "}
-                <Link href="/terms">Terms</Link> &{" "}
+                Please review the <Link href="/terms">Terms</Link> &{" "}
                 <Link href="/license">License</Link> before purchasing.
               </div>
             </div>
@@ -219,6 +224,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
             border-bottom-color: rgba(242,242,242,0.38);
           }
 
+          /* モバイルでは自然に折り返し */
           @media (max-width: 819px){
             .specLine{
               white-space: normal;
@@ -231,6 +237,7 @@ export default function SiteFrame({ children }: { children: ReactNode }) {
         <div className="container">
           <div className="footerTop">
             <div>
+              {/* Remember（そのまま） */}
               <div className="kicker">Remember</div>
               <div style={{ fontSize: 18, fontWeight: 500, marginTop: 10 }}>
                 必要なときだけ、思い出してください。
