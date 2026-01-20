@@ -24,7 +24,6 @@ export const WORKS_META: Record<
     title: "g4tywz0w",
     price: 390,
     stripePriceId: "price_1SovAMPdHZWs1X17DxvgZ1Fg",
-    series: "bronco",
   },
   "5wf7bntd": {
     title: "5wf7bntd",
@@ -156,6 +155,7 @@ export const WORKS_META: Record<
     series: "f100",
   },
 } as const;
+
 
 
 
