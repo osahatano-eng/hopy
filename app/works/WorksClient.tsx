@@ -2,15 +2,19 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { WORKS } from "@/lib/works";
 import FavoriteButton from "@/app/_components/FavoriteButton";
 
 type Mode = "all" | "sellable";
 
-type SeriesDef = {
-  key: string;
-  label: string;
+type WorkLite = {
+  slug: string;
+  image: string;
+  series: string;
+  stripePriceId: string;
+  price: number;
 };
+
+type SeriesDef = { key: string; label: string };
 
 const SERIES_ORDER: SeriesDef[] = [
   { key: "dino", label: "Dino 246 GT" },
@@ -21,29 +25,27 @@ const SERIES_ORDER: SeriesDef[] = [
   { key: "moto", label: "Motorcycles" },
 ];
 
-// series未設定の置き場
 const OTHER_SERIES_KEY = "__other__";
 const OTHER_SERIES_LABEL = "Other";
 
-function bySellableFirstStable(list: any[]) {
+function bySellableFirstStable(list: WorkLite[]) {
   const sellable = list.filter((w) => Boolean(w.stripePriceId));
   const others = list.filter((w) => !Boolean(w.stripePriceId));
   return [...sellable, ...others];
 }
 
-export default function WorksClient() {
+export default function WorksClient({ works }: { works: WorkLite[] }) {
   const [mode, setMode] = useState<Mode>("all");
 
   const baseList = useMemo(() => {
-    const list = mode === "sellable" ? WORKS.filter((w) => Boolean((w as any).stripePriceId)) : WORKS;
-    // 各棚内は「売れるものを先頭」＋元順序は維持
-    return bySellableFirstStable(list as any[]);
-  }, [mode]);
+    const list = mode === "sellable" ? works.filter((w) => Boolean(w.stripePriceId)) : works;
+    return bySellableFirstStable(list);
+  }, [mode, works]);
 
   const seriesBuckets = useMemo(() => {
-    const map = new Map<string, any[]>();
+    const map = new Map<string, WorkLite[]>();
     for (const w of baseList) {
-      const k = (w as any).series?.trim() || OTHER_SERIES_KEY;
+      const k = w.series?.trim() || OTHER_SERIES_KEY;
       if (!map.has(k)) map.set(k, []);
       map.get(k)!.push(w);
     }
@@ -53,24 +55,17 @@ export default function WorksClient() {
   const orderedSeriesKeys = useMemo(() => {
     const keys: string[] = [];
 
-    // 定義順に並べる
     for (const s of SERIES_ORDER) {
       if ((seriesBuckets.get(s.key) ?? []).length > 0) keys.push(s.key);
     }
-
-    // 定義外 series（将来増えても拾う）
     for (const k of seriesBuckets.keys()) {
       if (k === OTHER_SERIES_KEY) continue;
       if (!SERIES_ORDER.some((x) => x.key === k)) keys.push(k);
     }
-
-    // other は最後
     if ((seriesBuckets.get(OTHER_SERIES_KEY) ?? []).length > 0) keys.push(OTHER_SERIES_KEY);
 
     return keys;
   }, [seriesBuckets]);
-
-  const total = baseList.length;
 
   const seriesLabel = (key: string) => {
     if (key === OTHER_SERIES_KEY) return OTHER_SERIES_LABEL;
@@ -93,7 +88,7 @@ export default function WorksClient() {
         <div style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.6 }}>
           {mode === "sellable" ? "販売中のみ表示" : "すべて表示"}
           <br />
-          <span style={{ opacity: 0.7 }}>{total} 枚</span>
+          <span style={{ opacity: 0.7 }}>{baseList.length} 枚</span>
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -135,29 +130,17 @@ export default function WorksClient() {
             <section key={sKey} className="shelf">
               <div className="shelfHead">
                 <div className="shelfTitle">{seriesLabel(sKey)}</div>
-
-                {/* 棚の“すべて見る”が必要ならON（今はリンクだけ置いてある） */}
-                {/* <Link className="shelfMore" href={`/works?series=${encodeURIComponent(sKey)}`}>More</Link> */}
               </div>
 
               <div className="rail" aria-label={`series-${sKey}`}>
-                {items.map((w: any) => (
+                {items.map((w) => (
                   <div key={w.slug} className="cardWrap">
-                    <Link
-                      href={`/p/${w.slug}`}
-                      className="card"
-                      aria-label={`Open ${w.slug}`}
-                    >
+                    <Link href={`/p/${w.slug}`} className="card" aria-label={`Open ${w.slug}`}>
                       <div className="frame">
-                        <img
-                          src={w.image}
-                          alt={w.title ?? w.slug}
-                          className="img"
-                        />
+                        <img src={w.image} alt={w.slug} className="img" />
                       </div>
                     </Link>
 
-                    {/* 右上：お気に入り（リンクに飛ばさない） */}
                     <div
                       className="fav"
                       onClick={(e) => {
@@ -169,14 +152,6 @@ export default function WorksClient() {
                     >
                       <FavoriteButton slug={w.slug} compact size={18} />
                     </div>
-
-                    {/* 価格・販売中だけ欲しければここをON（タイトルは出さない運用でもOK）
-                    <div className="meta">
-                      <div className="subline">
-                        {w.stripePriceId ? "On sale" : "Soon"} · ¥{Number(w.price ?? 0).toLocaleString("ja-JP")}
-                      </div>
-                    </div>
-                    */}
                   </div>
                 ))}
               </div>
@@ -186,10 +161,7 @@ export default function WorksClient() {
       </div>
 
       <style>{`
-        .shelf{
-          margin-top: 22px;
-        }
-
+        .shelf{ margin-top: 22px; }
         .shelfHead{
           display:flex;
           align-items: baseline;
@@ -197,50 +169,33 @@ export default function WorksClient() {
           gap: 12px;
           margin-bottom: 10px;
         }
-
         .shelfTitle{
           font-size: 12px;
           letter-spacing: 0.12em;
           opacity: 0.85;
           text-transform: uppercase;
         }
-
-        .shelfMore{
-          font-size: 12px;
-          opacity: 0.6;
-          text-decoration: none;
-        }
-
         .rail{
           display:flex;
           gap: 12px;
           overflow-x: auto;
           overflow-y: hidden;
           padding-bottom: 8px;
-
           scroll-snap-type: x mandatory;
           -webkit-overflow-scrolling: touch;
-
-          /* 横スクロールの見た目を整える */
           scrollbar-width: thin;
         }
-
         .cardWrap{
           position: relative;
           flex: 0 0 auto;
-          width: 46vw;          /* スマホで2枚弱見える */
-          max-width: 280px;     /* 伸びすぎ防止 */
+          width: 46vw;
+          max-width: 280px;
           scroll-snap-align: start;
         }
-
         @media (min-width: 920px){
-          .cardWrap{
-            width: 220px;       /* PCは固定で気持ちよく */
-            max-width: 240px;
-          }
+          .cardWrap{ width: 220px; max-width: 240px; }
           .rail{ gap: 14px; }
         }
-
         .card{
           display:block;
           border-radius: 0;
@@ -248,29 +203,24 @@ export default function WorksClient() {
           overflow: hidden;
           background: rgba(242,242,242,0.04);
         }
-
         .frame{
           width: 100%;
           aspect-ratio: 9 / 16;
           overflow:hidden;
           background: rgba(242,242,242,0.05);
         }
-
         .img{
           width:100%;
           height:100%;
           object-fit: cover;
           display:block;
         }
-
         .fav{
           position:absolute;
           top: 10px;
           right: 10px;
           z-index: 3;
         }
-
-        /* hoverは“PCだけ” */
         @media (hover: hover) and (pointer: fine) {
           .card:hover .img { transform: scale(1.02); }
           .img{ transition: transform 260ms ease; }
