@@ -82,7 +82,7 @@ export default async function ProductPage({ params }: Props) {
 
                 <p className="sub" style={{ marginTop: 12 }}>
                   {w.description ??
-                    "壁紙<br />YouTube short<br />Instagram Reels<br />にご利用ください。"}
+                    "あなたは、理想を現実に変える1歩を踏み出していますか？"}
                 </p>
 
                 <div
@@ -93,6 +93,7 @@ export default async function ProductPage({ params }: Props) {
                     opacity: 0.88,
                   }}
                 >
+                  壁紙<br />YouTube short<br />Instagram Reels<br />にご利用ください。<br /><br />
                   この画像を動かすのは、あなたです。
                 </div>
 
@@ -206,6 +207,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
