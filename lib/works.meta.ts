@@ -220,7 +220,14 @@ export const WORKS_META: Record<
     stripePriceId: "price_1SrvtPPdHZWs1X17Pcjty07c",
     series: "dino",
   },
+  "p2ysb4km": {
+    title: "p2ysb4km",
+    price: 390,
+    stripePriceId: "price_1Srw4aPdHZWs1X17u4KHRPN9",
+    series: "gt350h",
+  },
 } as const;
+
 
 
 
