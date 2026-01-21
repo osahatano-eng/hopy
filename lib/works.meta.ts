@@ -262,7 +262,14 @@ export const WORKS_META: Record<
     stripePriceId: "price_1Ss07dPdHZWs1X17JjtoWsTp",
     series: "bronco",
   },
+  "58jp6ymz": {
+    title: "58jp6ymz",
+    price: 390,
+    stripePriceId: "price_1Ss0U2PdHZWs1X17kUhbr30m",
+    series: "moto",
+  },
 } as const;
+
 
 
 
