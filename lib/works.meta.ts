@@ -226,7 +226,20 @@ export const WORKS_META: Record<
     stripePriceId: "price_1Srw4aPdHZWs1X17u4KHRPN9",
     series: "gt350h",
   },
+  "r88cbjqo": {
+    title: "r88cbjqo",
+    price: 390,
+    stripePriceId: "price_1SrwO4PdHZWs1X174GgxVklp",
+    series: "964",
+  },
+  "0rh82tbc": {
+    title: "0rh82tbc",
+    price: 390,
+    stripePriceId: "price_1SrwOsPdHZWs1X178mdLRLlI",
+    series: "964",
+  },
 } as const;
+
 
 
 
