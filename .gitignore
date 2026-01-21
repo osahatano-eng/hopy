@@ -1,0 +1,16 @@
+# backups
+names_backup_*.xlsx
+*_bak*
+*.bak*
+
+# runtime
+run/
+input_done/
+
+# image rebuild temp
+public/works/_bak/
+public/works/_bak_rebuild/
+
+# OS junk
+.DS_Store
+Thumbs.db
