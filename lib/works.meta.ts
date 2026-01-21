@@ -196,7 +196,26 @@ export const WORKS_META: Record<
     stripePriceId: "price_1SrvHmPdHZWs1X17c0EaSdoB",
     series: "964",
   },
+  "n6s5h4v9": {
+    title: "n6s5h4v9",
+    price: 390,
+    stripePriceId: "price_1SrvkTPdHZWs1X17t0Xzqyk8",
+    series: "dino",
+  },
+  "axri1ag2": {
+    title: "axri1ag2",
+    price: 390,
+    stripePriceId: "price_1Srvl5PdHZWs1X17Q9Eg0zwn",
+    series: "dino",
+  },
+  "f7m05b4u": {
+    title: "f7m05b4u",
+    price: 390,
+    stripePriceId: "price_1SrvlqPdHZWs1X17KlGtejSq",
+    series: "dino",
+  },
 } as const;
+
 
 
 
