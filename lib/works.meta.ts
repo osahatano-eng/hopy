@@ -160,7 +160,14 @@ export const WORKS_META: Record<
     stripePriceId: "price_1SruhDPdHZWs1X17Ry8RJVR1",
     series: "964",
   },
+   "fuxp1un3": {
+    title: "fuxp1un3",
+    price: 390,
+    stripePriceId: "price_1SrutwPdHZWs1X17Iqndf99Q",
+    series: "964",
+  },
 } as const;
+
 
 
 
