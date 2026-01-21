@@ -185,5 +185,10 @@ export const WORKS: WorkBase[] = [
     image: "/works/lpv0bvsw.png",
     downloadFile: "lpv0bvsw.png",
   },
+  {
+    slug: "p2ysb4km",
+    image: "/works/p2ysb4km.png",
+    downloadFile: "p2ysb4km.png",
+  },
 ] as const;
 
