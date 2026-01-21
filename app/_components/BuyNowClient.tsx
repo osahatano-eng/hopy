@@ -48,7 +48,7 @@ export default function BuyNowClient({ slug, disabled }: Props) {
   return (
     <div>
       <button className="btn btnPrimary" type="button" onClick={onBuy} disabled={disabled || busy}>
-        {busy ? "処理中..." : "この1枚から始める"}
+        {busy ? "処理中..." : "購入してダウンロード"}
       </button>
 
       {msg ? (
