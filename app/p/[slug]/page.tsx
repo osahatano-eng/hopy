@@ -23,7 +23,7 @@ export default async function ProductPage({ params }: Props) {
         <section className="section" style={{ paddingTop: 44 }}>
           <div className="container">
             <div style={{ marginBottom: 16 }}>
-              <Link href="/works" className="navLink">
+              <Link href="/" className="navLink">
                 ← 作品一覧に戻る
               </Link>
             </div>
@@ -45,18 +45,6 @@ export default async function ProductPage({ params }: Props) {
                   />
                 </div>
 
-                {/* 思想コピー */}
-                <div
-                  style={{
-                    marginTop: 12,
-                    fontSize: 13,
-                    opacity: 0.78,
-                    lineHeight: 1.6,
-                    textAlign: "center",
-                  }}
-                >
-                  <strong>この1枚から、映像が始まる。</strong>
-                </div>
 
                 {/* 動画（9:16・自動再生・タップで停止/再生） */}
                 {videoSrc && (
@@ -94,7 +82,7 @@ export default async function ProductPage({ params }: Props) {
 
                 <p className="sub" style={{ marginTop: 12 }}>
                   {w.description ??
-                    "これは完成品ではありません。あなたの映像や物語が動き出す“始点”としての1フレームです。"}
+                    "壁紙、YouTube short、Instagram Reelsにご利用ください。"}
                 </p>
 
                 <div
@@ -105,14 +93,7 @@ export default async function ProductPage({ params }: Props) {
                     opacity: 0.88,
                   }}
                 >
-                  Shortの冒頭3秒。物語の導入カット。音が入る前の静止。
-                  <br />
-                  フェードインの最初のフレーム。
-                  <br />
-                  <br />
-                  そういった「始まりの瞬間」に使うための素材です。
-                  <br />
-                  動かすのは、あなたです。
+                  この画像を動かすのは、あなたです。
                 </div>
 
                 {/* 購入カード */}
@@ -165,7 +146,7 @@ export default async function ProductPage({ params }: Props) {
 
                 {/* 下部ナビ：ジャンル削除 */}
                 <div style={{ marginTop: 18, display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  <Link className="btn" href="/works">
+                  <Link className="btn" href="/">
                     他の作品を見る
                   </Link>
                 </div>
@@ -225,6 +206,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
