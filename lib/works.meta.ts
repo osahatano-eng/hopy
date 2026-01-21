@@ -250,7 +250,20 @@ export const WORKS_META: Record<
     stripePriceId: "price_1Srwi3PdHZWs1X17uiYz14JA",
     series: "dino",
   },
+  "cx8e8dvc": {
+    title: "cx8e8dvc",
+    price: 390,
+    stripePriceId: "price_1Ss06yPdHZWs1X17h24He3n8",
+    series: "bronco",
+  },
+  "gp69vuj4": {
+    title: "gp69vuj4",
+    price: 390,
+    stripePriceId: "price_1Ss07dPdHZWs1X17JjtoWsTp",
+    series: "bronco",
+  },
 } as const;
+
 
 
 
