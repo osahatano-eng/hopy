@@ -268,7 +268,14 @@ export const WORKS_META: Record<
     stripePriceId: "price_1Ss0U2PdHZWs1X17kUhbr30m",
     series: "moto",
   },
+  "2olgyqdi": {
+    title: "2olgyqdi",
+    price: 390,
+    stripePriceId: "price_1Ss0hiPdHZWs1X17ACsFEGTP",
+    series: "moto",
+  },
 } as const;
+
 
 
 
