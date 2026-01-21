@@ -93,7 +93,7 @@ export default async function ProductPage({ params }: Props) {
                     opacity: 0.88,
                   }}
                 >
-                  壁紙<br />YouTube short<br />Instagram Reels<br />にご利用ください。<br /><br />
+                  スマホ壁紙<br />YouTube short<br />Instagram Reels<br /><br /><br />
                   この画像を動かすのは、あなたです。
                 </div>
 
@@ -207,6 +207,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
