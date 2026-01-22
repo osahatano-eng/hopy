@@ -20,10 +20,11 @@ export default async function SuccessPage({ searchParams }: Props) {
           </Link>
         ) : null}
 
-        <Link className="btn" href="/works">
+        <Link className="btn" href="/">
           作品一覧へ
         </Link>
       </div>
     </main>
   );
 }
+
