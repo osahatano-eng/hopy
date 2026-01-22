@@ -270,7 +270,14 @@ export const WORKS_META: Record<
     stripePriceId: "price_1Ss0hiPdHZWs1X17ACsFEGTP",
     series: "moto",
   },
+  "juub901g": {
+    title: "juub901g",
+    price: 390,
+    stripePriceId: "price_1SsHsEPdHZWs1X17IGKW3ZV8",
+    series: "moto",
+  },
 } as const;
+
 
 
 
