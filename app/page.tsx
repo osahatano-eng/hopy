@@ -23,7 +23,7 @@ export default function HomePage() {
             <div className="kicker">HOPY AI — Visual Studio for Hope</div>
 
             <h1 className="h1">
-              Your Past. Your Future. In One Frame.
+              Your Past. <br />Your Future.<br /> In One Frame.
             </h1>
 
             <p
