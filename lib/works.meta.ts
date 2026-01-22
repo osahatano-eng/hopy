@@ -32,11 +32,6 @@ export const WORKS_META: Record<
     stripePriceId: "price_1SpngjPdHZWs1X17VuKOI5td",
     series: "moto",
   },
-    "r4xva4g5": {
-    title: "r4xva4g5",
-    price: 390,
-    stripePriceId: "price_1SppcgPdHZWs1X17LXQzU1S9",
-  },
     "m48opy86": {
     title: "m48opy86",
     price: 390,
@@ -276,6 +271,7 @@ export const WORKS_META: Record<
     series: "moto",
   },
 } as const;
+
 
 
 
