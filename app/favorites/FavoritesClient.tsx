@@ -195,7 +195,7 @@ export default function FavoritesClient() {
             {busy ? "処理中..." : `全部購入（¥${yen(totalYen)}）`}
           </button>
 
-          <Link className="btn" href="/works" style={{ borderRadius: 0 }}>
+          <Link className="btn" href="/" style={{ borderRadius: 0 }}>
             作品を追加して探す
           </Link>
 
@@ -293,6 +293,7 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
 
 
 
