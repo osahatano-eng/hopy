@@ -82,7 +82,7 @@ export default async function ProductPage({ params }: Props) {
 
                 <p className="sub" style={{ marginTop: 12 }}>
                   {w.description ??
-                    "「あの日の憧れは、まだ終わっていない。」"}
+                    "「これは、未来へ踏み出すための一枚。」"}
                 </p>
 
                 <div
@@ -93,14 +93,10 @@ export default async function ProductPage({ params }: Props) {
                     opacity: 0.88,
                   }}
                 >
-                  「これは、未来へ踏み出すための一枚。」<br />
-                 大切なのは、<br />
-                 これから、どこへ向かうか。<br /><br />
+                 大切なのは、これから、どこへ向かうか。<br /><br />
             
-                  That dream didn’t end back then.<br />
-                  A frame for taking your next step.<br /><br />
-                  What matters is<br />
-                  where you choose to go next.<br /><br />
+                  A frame for taking your next step.<br />
+                  What matters is where you choose to go next.
                 </div>
 
                 {/* 購入カード */}
@@ -213,6 +209,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
