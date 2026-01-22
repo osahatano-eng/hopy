@@ -15,11 +15,10 @@ type WorkLite = {
 type SeriesDef = { key: string; label: string };
 
 const SERIES_ORDER: SeriesDef[] = [
-  { key: "dino", label: "Dino 246 GT" },
-  { key: "gt350h", label: "Ford Shelby Mustang GT350H" },
-  { key: "964", label: "Porsche 964" },
-  { key: "f100", label: "Ford F-100" },
-  { key: "bronco", label: "Ford Bronco" },
+  { key: "ferrari", label: "Ferrari" },
+  { key: "mustang", label: "Ford Mustang" },
+  { key: "porsche", label: "Porsche" },
+  { key: "Ford", label: "Ford" },
   { key: "moto", label: "Motorcycles" },
 ];
 
@@ -301,6 +300,7 @@ function Card({ w }: { w: WorkLite }) {
     </div>
   );
 }
+
 
 
 
