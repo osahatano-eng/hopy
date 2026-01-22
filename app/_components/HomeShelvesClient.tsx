@@ -47,10 +47,10 @@ function bySellableFirstStable(list: WorkLite[]) {
 }
 
 export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
-  // NEW を「最終UPが左」になるように：
-  // 1) 時刻情報があればそれで降順
-  // 2) 時刻情報が全て無いなら、末尾が最新とみなして reverse
-  // 3) その上で sellable を先頭へ（トップ導線）
+  // Recommend（入口棚）：
+  // - 時刻情報があれば新しい順
+  // - 全部無ければ末尾が最新とみなして reverse
+  // - その上で sellable を先頭へ（トップ導線）
   const baseList = useMemo(() => {
     const timeKeys = works.map(getTimeKey);
     const hasAnyTime = timeKeys.some((t) => t > 0);
@@ -103,15 +103,15 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   return (
-    <div>
-      {/* NEW（販売中のみ + 最終UP順） */}
-      <section className="shelf">
+    <div className="homeShelves">
+      {/* Recommend（入口棚） */}
+      <section className="shelf shelfIntro">
         <div className="shelfHead">
-          <div className="shelfTitle">NEW</div>
-          <div className="shelfSub">Latest uploads</div>
+          <div className="shelfTitle">Recommended</div>
+          <div className="shelfSub">Start here.</div>
         </div>
 
-        <div className="rail" aria-label="new">
+        <div className="rail" aria-label="recommended">
           {baseList
             .filter((w) => Boolean(w.stripePriceId))
             .slice(0, 18)
@@ -172,8 +172,28 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
       </div>
 
       <style>{`
+        /* SiteFrame との間（container内の余白を整える） */
+        .homeShelves{
+          padding-top: 18px;
+        }
+        @media (min-width: 920px){
+          .homeShelves{
+            padding-top: 22px;
+          }
+        }
+
         .shelf{ margin-top: 22px; }
         .shelf:first-child{ margin-top: 0; }
+
+        /* 入口棚は少しだけ空気を足す（ヒーロー直下の“詰まり”解消） */
+        .shelfIntro{
+          margin-top: 6px;
+        }
+        @media (min-width: 920px){
+          .shelfIntro{
+            margin-top: 10px;
+          }
+        }
 
         .shelfHead{
           display:flex;
