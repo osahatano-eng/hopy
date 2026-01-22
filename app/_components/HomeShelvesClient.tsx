@@ -11,8 +11,7 @@ type WorkLite = {
   stripePriceId: string;
   price: number;
 
-  // 追加（存在しない場合もあるので optional）
-  // ここは works.generated 側に合わせて「あるなら効く」ようにする
+  // あれば使う（無くてもOK）
   updatedAt?: string;
   createdAt?: string;
   ts?: number;
@@ -33,8 +32,6 @@ const OTHER_SERIES_LABEL = "Other";
 // 1棚あたりの初期表示枚数（横スクロールなので“多すぎない”が正義）
 const SHELF_LIMIT = 12;
 
-// 新しい順に並べるための「時間キー」
-// 作品側に createdAt/updatedAt/ts があれば効く。無ければ 0 で並びは変わらない（安全）。
 function getTimeKey(w: WorkLite) {
   if (typeof w.ts === "number") return w.ts;
   const s = w.updatedAt ?? w.createdAt;
@@ -50,10 +47,18 @@ function bySellableFirstStable(list: WorkLite[]) {
 }
 
 export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
-  // 1) まず「最終UP（新しい順）」に並べる
-  // 2) その上でトップは sellable を先頭に寄せる（売れる導線優先）
+  // NEW を「最終UPが左」になるように：
+  // 1) 時刻情報があればそれで降順
+  // 2) 時刻情報が全て無いなら、末尾が最新とみなして reverse
+  // 3) その上で sellable を先頭へ（トップ導線）
   const baseList = useMemo(() => {
-    const byNewest = [...works].sort((a, b) => getTimeKey(b) - getTimeKey(a));
+    const timeKeys = works.map(getTimeKey);
+    const hasAnyTime = timeKeys.some((t) => t > 0);
+
+    const byNewest = hasAnyTime
+      ? [...works].sort((a, b) => getTimeKey(b) - getTimeKey(a))
+      : [...works].reverse();
+
     return bySellableFirstStable(byNewest);
   }, [works]);
 
@@ -99,7 +104,7 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
 
   return (
     <div>
-      {/* NEW：最上段（販売中のみ + 最新順） */}
+      {/* NEW（販売中のみ + 最終UP順） */}
       <section className="shelf">
         <div className="shelfHead">
           <div className="shelfTitle">NEW</div>
