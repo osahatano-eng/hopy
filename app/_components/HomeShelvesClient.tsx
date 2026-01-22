@@ -10,6 +10,12 @@ type WorkLite = {
   series: string;
   stripePriceId: string;
   price: number;
+
+  // 追加（存在しない場合もあるので optional）
+  // ここは works.generated 側に合わせて「あるなら効く」ようにする
+  updatedAt?: string;
+  createdAt?: string;
+  ts?: number;
 };
 
 type SeriesDef = { key: string; label: string };
@@ -27,6 +33,16 @@ const OTHER_SERIES_LABEL = "Other";
 // 1棚あたりの初期表示枚数（横スクロールなので“多すぎない”が正義）
 const SHELF_LIMIT = 12;
 
+// 新しい順に並べるための「時間キー」
+// 作品側に createdAt/updatedAt/ts があれば効く。無ければ 0 で並びは変わらない（安全）。
+function getTimeKey(w: WorkLite) {
+  if (typeof w.ts === "number") return w.ts;
+  const s = w.updatedAt ?? w.createdAt;
+  if (!s) return 0;
+  const t = Date.parse(s);
+  return Number.isFinite(t) ? t : 0;
+}
+
 function bySellableFirstStable(list: WorkLite[]) {
   const sellable = list.filter((w) => Boolean(w.stripePriceId));
   const others = list.filter((w) => !Boolean(w.stripePriceId));
@@ -34,8 +50,12 @@ function bySellableFirstStable(list: WorkLite[]) {
 }
 
 export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
-  // モードはトップでは “売れる導線” を優先して sellable を上に寄せるだけ（フィルタ自体はしない）
-  const baseList = useMemo(() => bySellableFirstStable(works), [works]);
+  // 1) まず「最終UP（新しい順）」に並べる
+  // 2) その上でトップは sellable を先頭に寄せる（売れる導線優先）
+  const baseList = useMemo(() => {
+    const byNewest = [...works].sort((a, b) => getTimeKey(b) - getTimeKey(a));
+    return bySellableFirstStable(byNewest);
+  }, [works]);
 
   const seriesBuckets = useMemo(() => {
     const map = new Map<string, WorkLite[]>();
@@ -79,14 +99,14 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
 
   return (
     <div>
-      {/* まず最上段：売れ筋（販売中のみ） */}
+      {/* NEW：最上段（販売中のみ + 最新順） */}
       <section className="shelf">
         <div className="shelfHead">
-          <div className="shelfTitle">Available Now</div>
-          <div className="shelfSub">Sellable first</div>
+          <div className="shelfTitle">NEW</div>
+          <div className="shelfSub">Latest uploads</div>
         </div>
 
-        <div className="rail" aria-label="available-now">
+        <div className="rail" aria-label="new">
           {baseList
             .filter((w) => Boolean(w.stripePriceId))
             .slice(0, 18)
@@ -210,19 +230,19 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
           -ms-overflow-style: none;   /* IE/旧Edge */
           scrollbar-width: none;
           -webkit-mask-image: linear-gradient(
-    to right,
-    #000 0%,
-    #000 88%,
-    rgba(0,0,0,0.6) 94%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    #000 0%,
-    #000 88%,
-    rgba(0,0,0,0.6) 94%,
-    transparent 100%
-  );
+            to right,
+            #000 0%,
+            #000 88%,
+            rgba(0,0,0,0.6) 94%,
+            transparent 100%
+          );
+          mask-image: linear-gradient(
+            to right,
+            #000 0%,
+            #000 88%,
+            rgba(0,0,0,0.6) 94%,
+            transparent 100%
+          );
         }
 
         .cardWrap{
@@ -299,12 +319,3 @@ function Card({ w }: { w: WorkLite }) {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
