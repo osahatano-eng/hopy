@@ -196,7 +196,7 @@ export default function FavoritesClient() {
           </button>
 
           <Link className="btn" href="/" style={{ borderRadius: 0 }}>
-            作品を追加して探す
+            追加の作品を探す
           </Link>
 
           <div style={{ fontSize: 12, opacity: 0.75 }}>
@@ -293,6 +293,7 @@ export default function FavoritesClient() {
     </div>
   );
 }
+
 
 
 
