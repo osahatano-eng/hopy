@@ -82,7 +82,7 @@ export default async function ProductPage({ params }: Props) {
 
                 <p className="sub" style={{ marginTop: 12 }}>
                   {w.description ??
-                    "「あの日の憧れは、まだ終わっていない。」That dream didn’t end back then."}
+                    "「あの日の憧れは、まだ終わっていない。」"}
                 </p>
 
                 <div
@@ -93,25 +93,14 @@ export default async function ProductPage({ params }: Props) {
                     opacity: 0.88,
                   }}
                 >
-                  Ferrari、Mustang、Porsche。<br />
-手に入れられなかった過去があってもいい。<br /><br />
-
-大切なのは、<br />
-これから、どこへ向かうか。<br /><br />
-
-Ferrari. Mustang. Porsche.<br />
-It’s okay if you never owned them.<br /><br />
-
-What matters is<br />
-where you choose to go next.<br /><br />
-
                   「これは、未来へ踏み出すための一枚。」<br />
-A frame for taking your next step.<br /><br />
-                  速さではなく、
-静けさを選んだ未来。<br /><br />
-
-Not speed,<br />
-but stillness — chosen.
+                 大切なのは、<br />
+                 これから、どこへ向かうか。<br /><br />
+            
+                  That dream didn’t end back then.
+                  A frame for taking your next step.<br /><br />
+                  What matters is<br />
+                  where you choose to go next.<br /><br />
                 </div>
 
                 {/* 購入カード */}
@@ -224,6 +213,7 @@ but stillness — chosen.
     </SiteFrame>
   );
 }
+
 
 
 
