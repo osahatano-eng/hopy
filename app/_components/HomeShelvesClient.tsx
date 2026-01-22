@@ -6,7 +6,7 @@ import FavoriteButton from "@/app/_components/FavoriteButton";
 
 type WorkLite = {
   slug: string;
-  image: string;
+  image: string; // 例: "/works/fuxp1un3.png" のようなURL
   series: string;
   stripePriceId: string;
   price: number;
@@ -32,12 +32,27 @@ const OTHER_SERIES_LABEL = "Other";
 // 1棚あたりの初期表示枚数（横スクロールなので“多すぎない”が正義）
 const SHELF_LIMIT = 12;
 
-function getTimeKey(w: WorkLite) {
-  if (typeof w.ts === "number") return w.ts;
-  const s = w.updatedAt ?? w.createdAt;
-  if (!s) return 0;
-  const t = Date.parse(s);
-  return Number.isFinite(t) ? t : 0;
+/**
+ * Recommended棚の固定リスト（ここを書き換えればいつでも差し替え可能）
+ * - 先頭から順番に表示
+ * - works の image（URL文字列）の「末尾ファイル名」で照合する
+ *   例: "/works/fuxp1un3.png" でも "fuxp1un3.png" でも一致
+ */
+const RECOMMENDED_FILES = [
+  "fuxp1un3.png",
+  "lpv0bvsw.png",
+  "j0writd2.png",
+  "58jp6ymz.png",
+  "p2ysb4km.png",
+  "0xl7t7xl.png",
+] as const;
+
+function fileNameFromPath(p: string) {
+  const s = (p ?? "").trim();
+  if (!s) return "";
+  const noQuery = s.split("?")[0];
+  const parts = noQuery.split("/");
+  return parts[parts.length - 1] ?? "";
 }
 
 function bySellableFirstStable(list: WorkLite[]) {
@@ -47,19 +62,36 @@ function bySellableFirstStable(list: WorkLite[]) {
 }
 
 export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
-  // Recommend（入口棚）：
-  // - 時刻情報があれば新しい順
-  // - 全部無ければ末尾が最新とみなして reverse
-  // - その上で sellable を先頭へ（トップ導線）
+  // Recommended棚：固定ファイル名順でピック（sellableのみを優先・ただし無ければ表示しない）
+  const recommendedList = useMemo(() => {
+    const byFile = new Map<string, WorkLite[]>();
+    for (const w of works) {
+      const fn = fileNameFromPath(w.image);
+      if (!fn) continue;
+      if (!byFile.has(fn)) byFile.set(fn, []);
+      byFile.get(fn)!.push(w);
+    }
+
+    const picked: WorkLite[] = [];
+    for (const fn of RECOMMENDED_FILES) {
+      const candidates = byFile.get(fn) ?? [];
+      if (candidates.length === 0) continue;
+
+      // 同じ画像ファイル名が複数slugに紐づく可能性があるので、
+      // 基本は sellable を優先して 1つ選ぶ
+      const sellable = candidates.find((x) => Boolean(x.stripePriceId));
+      picked.push(sellable ?? candidates[0]);
+    }
+
+    // 念のため：sellable → others の並びに整形（ただし順番は固定リストが最優先）
+    // 固定順を壊したくないので、ここでは並び替えない。
+    return picked;
+  }, [works]);
+
+  // 以降の棚（シリーズ棚）は従来通り：sellable優先で “それっぽく” 並べる
   const baseList = useMemo(() => {
-    const timeKeys = works.map(getTimeKey);
-    const hasAnyTime = timeKeys.some((t) => t > 0);
-
-    const byNewest = hasAnyTime
-      ? [...works].sort((a, b) => getTimeKey(b) - getTimeKey(a))
-      : [...works].reverse();
-
-    return bySellableFirstStable(byNewest);
+    // ここは Recommended と独立。並びの根拠は「sellableを前」に寄せるだけ。
+    return bySellableFirstStable(works);
   }, [works]);
 
   const seriesBuckets = useMemo(() => {
@@ -104,7 +136,7 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
 
   return (
     <div className="homeShelves">
-      {/* Recommend（入口棚） */}
+      {/* Recommended（入口棚：固定順） */}
       <section className="shelf shelfIntro">
         <div className="shelfHead">
           <div className="shelfTitle">Recommended</div>
@@ -112,12 +144,15 @@ export default function HomeShelvesClient({ works }: { works: WorkLite[] }) {
         </div>
 
         <div className="rail" aria-label="recommended">
-          {baseList
-            .filter((w) => Boolean(w.stripePriceId))
-            .slice(0, 18)
-            .map((w) => (
-              <Card key={w.slug} w={w} />
-            ))}
+          {recommendedList.length > 0 ? (
+            recommendedList.map((w) => <Card key={w.slug} w={w} />)
+          ) : (
+            // 何も拾えない時の保険（空棚回避）
+            baseList
+              .filter((w) => Boolean(w.stripePriceId))
+              .slice(0, 12)
+              .map((w) => <Card key={w.slug} w={w} />)
+          )}
         </div>
       </section>
 
