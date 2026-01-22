@@ -70,13 +70,13 @@ export const WORKS_META: Record<
     title: "6fapbktp",
     price: 390,
     stripePriceId: "price_1SqIVZPdHZWs1X17zUGPqODB",
-    series: "mustang",
+    series: "ford",
   },
    "0vy0bibt": {
     title: "0vy0bibt",
     price: 390,
     stripePriceId: "price_1Sqgq1PdHZWs1X17pZbh2Up1",
-    series: "mustang",
+    series: "ford",
   },
    "r6qvrdxz": {
     title: "r6qvrdxz",
@@ -112,13 +112,13 @@ export const WORKS_META: Record<
     title: "hty8ut3e",
     price: 390,
     stripePriceId: "price_1SqkO2PdHZWs1X173J2qNJts",
-    series: "mustang",
+    series: "ford",
   },
    "up73h59u": {
     title: "up73h59u",
     price: 390,
     stripePriceId: "price_1SqkvjPdHZWs1X17uNt2VbMF",
-    series: "mustang",
+    series: "ford",
   },
    "949vogeu": {
     title: "949vogeu",
@@ -220,7 +220,7 @@ export const WORKS_META: Record<
     title: "p2ysb4km",
     price: 390,
     stripePriceId: "price_1Srw4aPdHZWs1X17u4KHRPN9",
-    series: "mustang",
+    series: "ford",
   },
   "r88cbjqo": {
     title: "r88cbjqo",
@@ -277,6 +277,7 @@ export const WORKS_META: Record<
     series: "moto",
   },
 } as const;
+
 
 
 
