@@ -97,7 +97,7 @@ export default async function ProductPage({ params }: Props) {
                  大切なのは、<br />
                  これから、どこへ向かうか。<br /><br />
             
-                  That dream didn’t end back then.
+                  That dream didn’t end back then.<br />
                   A frame for taking your next step.<br /><br />
                   What matters is<br />
                   where you choose to go next.<br /><br />
@@ -213,6 +213,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
