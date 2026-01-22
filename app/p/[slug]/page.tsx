@@ -82,7 +82,7 @@ export default async function ProductPage({ params }: Props) {
 
                 <p className="sub" style={{ marginTop: 12 }}>
                   {w.description ??
-                    "あなたは、理想を現実に変える1歩を踏み出していますか？"}
+                    "「あの日の憧れは、まだ終わっていない。」That dream didn’t end back then."}
                 </p>
 
                 <div
@@ -93,8 +93,25 @@ export default async function ProductPage({ params }: Props) {
                     opacity: 0.88,
                   }}
                 >
-                  スマホ壁紙<br />YouTube short<br />Instagram Reels<br /><br /><br />
-                  この画像を動かすのは、あなたです。
+                  Ferrari、Mustang、Porsche。<br />
+手に入れられなかった過去があってもいい。<br /><br />
+
+大切なのは、<br />
+これから、どこへ向かうか。<br /><br />
+
+Ferrari. Mustang. Porsche.<br />
+It’s okay if you never owned them.<br /><br />
+
+What matters is<br />
+where you choose to go next.<br /><br />
+
+                  「これは、未来へ踏み出すための一枚。」<br />
+A frame for taking your next step.<br /><br />
+                  速さではなく、
+静けさを選んだ未来。<br /><br />
+
+Not speed,<br />
+but stillness — chosen.
                 </div>
 
                 {/* 購入カード */}
@@ -102,7 +119,7 @@ export default async function ProductPage({ params }: Props) {
                   <div className="buyTop">
                     <div>
                       <div style={{ fontSize: 12, opacity: 0.7 }}>
-                        このフレームの使用料
+                        「“私”を持ち帰る。」
                       </div>
                       <div style={{ fontSize: 24, fontWeight: 600 }}>
                         ¥{Number((w as any).price ?? 0).toLocaleString("ja-JP")}
@@ -207,6 +224,7 @@ export default async function ProductPage({ params }: Props) {
     </SiteFrame>
   );
 }
+
 
 
 
