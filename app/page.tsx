@@ -17,11 +17,31 @@ export default function HomePage() {
   return (
     <SiteFrame>
       <main>
-        {/* Hero（残す：AI VISUAL STUDIO / Silent Start） */}
+        {/* Hero */}
         <section className="hero heroMinimal">
           <div className="container">
-            <div className="kicker">AI VISUAL STUDIO</div>
-            <h1 className="h1">Silent Start</h1>
+            <div className="kicker">HOPY AI — Visual Studio for Hope</div>
+
+            <h1 className="h1">
+              Your Past. Your Future. In One Frame.
+            </h1>
+
+            <p
+              style={{
+                marginTop: 14,
+                fontSize: 14,
+                lineHeight: 1.6,
+                letterSpacing: "0.06em",
+                opacity: 0.8,
+                maxWidth: 520,
+              }}
+            >
+              過去の私と、未来の私を、一枚に。
+              <br />
+              これは懐かしさじゃない。
+              <br />
+              <strong>これは、希望だ。</strong>
+            </p>
           </div>
         </section>
 
