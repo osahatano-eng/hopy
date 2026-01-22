@@ -18,7 +18,7 @@ const SERIES_ORDER: SeriesDef[] = [
   { key: "ferrari", label: "Ferrari" },
   { key: "mustang", label: "Ford Mustang" },
   { key: "porsche", label: "Porsche" },
-  { key: "Ford", label: "Ford" },
+  { key: "ford", label: "Ford" },
   { key: "moto", label: "Motorcycles" },
 ];
 
@@ -300,6 +300,7 @@ function Card({ w }: { w: WorkLite }) {
     </div>
   );
 }
+
 
 
 
