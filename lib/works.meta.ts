@@ -276,7 +276,14 @@ export const WORKS_META: Record<
     stripePriceId: "price_1SsHsEPdHZWs1X17IGKW3ZV8",
     series: "moto",
   },
+  "rhe1j7fa": {
+    title: "rhe1j7fa",
+    price: 390,
+    stripePriceId: "price_1SsmyePdHZWs1X17v7h8nnnS",
+    series: "ford",
+  },
 } as const;
+
 
 
 
