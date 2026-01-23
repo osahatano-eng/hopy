@@ -39,6 +39,7 @@ const SHELF_LIMIT = 12;
  *   例: "/works/fuxp1un3.png" でも "fuxp1un3.png" でも一致
  */
 const RECOMMENDED_FILES = [
+  "rhe1j7fa.png",
   "fuxp1un3.png",
   "lpv0bvsw.png",
   "j0writd2.png",
@@ -379,3 +380,4 @@ function Card({ w }: { w: WorkLite }) {
     </div>
   );
 }
+
